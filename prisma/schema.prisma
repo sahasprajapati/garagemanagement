@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Article {
+  id          Int      @id @default(autoincrement())
+  title       String   @unique
+  description String?
+  body        String
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Permission {
+  id              Int               @id @default(autoincrement())
+  action          String
+  rolePermissions Role_Permission[]
+
+  condition Json?
+
+  object   Object? @relation(fields: [objectId], references: [id])
+  objectId Int?
+
+  @@unique([action, objectId], name: "permissionIdentifier")
+}
+
+model Object {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  permissions Permission[]
+}
+
+model Role_Permission {
+  id Int @id @default(autoincrement())
+
+  role         Role?       @relation(fields: [roleId], references: [id])
+  roleId       Int?
+  permission   Permission? @relation(fields: [permissionId], references: [id])
+  permissionId Int?
+
+  @@unique([roleId, permissionId], name: "rolePermissionIdentifier")
+}
+
+model Role {
+  id              Int               @id @default(autoincrement())
+  name            String            @unique
+  user            User[]
+  rolePermissions Role_Permission[]
+}
+
+model User {
+  id    Int    @id @default(autoincrement())
+  email String @unique
+
+  role   Role? @relation(fields: [roleId], references: [id])
+  roleId Int?
+
+  password String
+  name     String
+}
