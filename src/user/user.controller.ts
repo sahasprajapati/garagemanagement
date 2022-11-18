@@ -27,7 +27,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
 import { PageOptionsDto } from '@src/common/dtos/pagination/page-options.dto';
-import { ApiPaginatedResponse } from '@src/common/decorators/api-paginated-response.decorator';
 import { PageDto } from '@src/common/dtos/pagination/page.dto';
 
 @Controller('users')
