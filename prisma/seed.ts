@@ -15,42 +15,17 @@ export enum PermissionAction {
 const prisma = new PrismaClient();
 
 async function main() {
-  // create two dummy articles
-  const post1 = await prisma.article.upsert({
-    where: { title: 'Prisma Adds Support for MongoDB' },
-    update: {},
-    create: {
-      title: 'Prisma Adds Support for MongoDB',
-      body: 'Support for MongoDB has been one of the most requested features since the initial release of...',
-      description:
-        "We are excited to share that today's Prisma ORM release adds stable support for MongoDB!",
-      published: false,
-    },
-  });
-
-  const post2 = await prisma.article.upsert({
-    where: { title: "What's new in Prisma? (Q1/22)" },
-    update: {},
-    create: {
-      title: "What's new in Prisma? (Q1/22)",
-      body: 'Our engineers have been working hard, issuing new releases with many improvements...',
-      description:
-        'Learn about everything in the Prisma ecosystem and community from January to March 2022.',
-      published: true,
-    },
-  });
-
   const role = await prisma.role.upsert({
     where: {
-      name: 'admin',
+      name: 'super',
     },
     update: {},
     create: {
-      name: 'admin',
+      name: 'super',
     },
   });
 
-  const object = await prisma.object.upsert({
+  const subject = await prisma.subject.upsert({
     where: {
       name: 'User',
     },
@@ -62,18 +37,18 @@ async function main() {
   const permission = await prisma.permission.upsert({
     where: {
       permissionIdentifier: {
-        objectId: object.id,
+        subjectId: subject.id,
         action: PermissionAction.Read,
       },
     },
     update: {},
     create: {
-      objectId: object.id,
+      subjectId: subject.id,
       action: PermissionAction.Read,
     },
   });
 
-  const permission_role = await prisma.role_Permission.upsert({
+  const permission_role = await prisma.rolePermission.upsert({
     where: {
       rolePermissionIdentifier: {
         roleId: role.id,
@@ -97,7 +72,7 @@ async function main() {
       roleId: role.id,
     },
   });
-  console.log({ post1, post2, superUser });
+  console.log({ superUser });
 
   modelNameGenerator();
 }

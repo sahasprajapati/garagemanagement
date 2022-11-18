@@ -1,20 +1,36 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { ValidationPipe } from '@nestjs/common';
+import {  setupSwagger } from './common/utils/swagger';
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  app.enableCors();
+// async function bootstrap() {
+//   const app = await NestFactory.create(AppModule);
+//   app.enableCors();
+//   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
-  const config = new DocumentBuilder()
-    .setTitle('Median')
-    .setDescription('The Median API description')
-    .setVersion('0.1')
-    .addBearerAuth()
-    .build();
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
-  await app.listen(3001);
-}
-bootstrap();
+//   console.log("Sahas data", await convertTypeToOpenAPI())
+//   setupSwagger(app)
+//   await app.listen(3001);
+// }
+// bootstrap();
+
+
+
+
+// import { NestFactory } from '@nestjs/core';
+// import { AppModule } from './app.module';
+
+// if (import.meta.env.PROD) {
+  async function bootstrap() {
+    const app = await NestFactory.create(AppModule);
+    app.enableCors();
+    app.useGlobalPipes(new ValidationPipe({ transform: true }));
+    setupSwagger(app)
+    await app.listen(3001);
+  }
+  bootstrap();
+// }
+
+export const viteNodeApp = NestFactory.create(AppModule);

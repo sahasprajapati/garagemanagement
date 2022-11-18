@@ -1,1 +1,1 @@
-{"models":["Article","Permission","Object","Role_Permission","Role","User"]}
+{"models":["Permission","Subject","RolePermission","Role","User","Staff","StaffDesignation","Attendance","Leave"]}

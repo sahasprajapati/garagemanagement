@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Permission, Prisma, User } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { UsersService } from 'src/user/user.service';
+import { PrismaService } from '@src/prisma/prisma.service';
+import { UsersService } from '@src/user/user.service';
 
-export type PermissionWithObject = Prisma.PermissionGetPayload<{
+export type PermissionWithSubject = Prisma.PermissionGetPayload<{
   include: {
-    object: true;
+    subject: true;
   };
 }>;
 @Injectable()
@@ -17,7 +17,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async findAllPermissionsOfUser(user: User): Promise<PermissionWithObject[]> {
+  async findAllPermissionsOfUser(user: User): Promise<PermissionWithSubject[]> {
     return await this.prisma.permission.findMany({
       where: {
         rolePermissions: {
@@ -27,7 +27,7 @@ export class AuthService {
         },
       },
       include: {
-        object: true,
+        subject: true,
       },
     });
   }

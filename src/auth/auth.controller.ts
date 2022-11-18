@@ -3,10 +3,10 @@ import {
   Body, Controller, Get, Post, Request, UseGuards
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { PermissionAction } from '@src/common/enums/permission.enum';
 import { AuthService } from './auth.service';
 import {
   CaslAbilityFactory,
-  PermissionAction,
   PermissionSubject
 } from './casl-ability.factory/casl-ability.factory';
 import { LocalAuthGuard } from './decorator/auth.guard';

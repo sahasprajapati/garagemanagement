@@ -2,7 +2,14 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+}
+
+generator prismaClassGenerator {
+  provider               = "prisma-class-generator"
+  separateRelationFields = true
+  dryRun                 = false
 }
 
 datasource db {
@@ -10,60 +17,113 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Article {
-  id          Int      @id @default(autoincrement())
-  title       String   @unique
-  description String?
-  body        String
-  published   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
 model Permission {
   id              Int               @id @default(autoincrement())
   action          String
-  rolePermissions Role_Permission[]
+  rolePermissions RolePermission[]
 
   condition Json?
 
-  object   Object? @relation(fields: [objectId], references: [id])
-  objectId Int?
+  subject   Subject? @relation(fields: [subjectId], references: [id])
+  subjectId Int?
 
-  @@unique([action, objectId], name: "permissionIdentifier")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@unique([action, subjectId], name: "permissionIdentifier")
 }
 
-model Object {
+model Subject {
   id          Int          @id @default(autoincrement())
   name        String       @unique
   permissions Permission[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @default(now()) @updatedAt
 }
 
-model Role_Permission {
+model RolePermission {
   id Int @id @default(autoincrement())
 
   role         Role?       @relation(fields: [roleId], references: [id])
   roleId       Int?
   permission   Permission? @relation(fields: [permissionId], references: [id])
   permissionId Int?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @default(now()) @updatedAt
 
   @@unique([roleId, permissionId], name: "rolePermissionIdentifier")
 }
 
 model Role {
-  id              Int               @id @default(autoincrement())
-  name            String            @unique
+  id              Int              @id @default(autoincrement())
+  name            String           @unique
   user            User[]
-  rolePermissions Role_Permission[]
+  rolePermissions RolePermission[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @default(now()) @updatedAt
 }
 
 model User {
-  id    Int    @id @default(autoincrement())
-  email String @unique
-
-  role   Role? @relation(fields: [roleId], references: [id])
-  roleId Int?
-
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  role     Role?  @relation(fields: [roleId], references: [id])
+  roleId   Int?
   password String
   name     String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Staff {
+  id                 Int              @id @default(autoincrement())
+  name               String
+  mobile             Int              @unique
+  designation        StaffDesignation @relation(fields: [staffDesignationId], references: [id])
+  staffDesignationId Int
+  attendance         Attendance[]
+  leave              Leave[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model StaffDesignation {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
+  description String?
+  staff       Staff[]
+  totalLeave  Int     @default(15)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Attendance {
+  id      Int             @id @default(autoincrement())
+  staff   Staff           @relation(fields: [staffId], references: [id])
+  staffId Int
+  status  AttendaceStatus @default(ABSENT)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Leave {
+  id          Int      @id @default(autoincrement())
+  days        Int      @default(0)
+  description String
+  staff       Staff    @relation(fields: [staffId], references: [id])
+  staffId     Int
+  from        DateTime
+  to          DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+enum AttendaceStatus {
+  PRESENT
+  ABSENT
+  LEAVE
 }

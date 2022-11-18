@@ -1,20 +1,14 @@
-import { createMongoAbility, InferSubjects } from '@casl/ability';
+import { createMongoAbility } from '@casl/ability';
 import { Injectable } from '@nestjs/common';
-import { Prisma, User } from '@prisma/client';
+import { User, Permission } from '@prisma/client';
+import { PermissionAction } from '@src/common/enums/permission.enum';
 import { AuthService } from '../auth.service';
 import { parseCondition } from '../decorator/perminssion.entity';
-import * as MODELS from 'models.json';
-export enum PermissionAction {
-  Manage = 'manage',
-  Create = 'create',
-  Read = 'read',
-  Update = 'update',
-  Delete = 'delete',
-}
-
 
 export enum PermissionSubject {
-  User =  "User"
+  User = 'User',
+  Role = 'Role',
+  Staff = 'Staff',
 }
 
 export type PermissionObjectType = any;
@@ -37,7 +31,7 @@ export class CaslAbilityFactory {
 
     const rules = dbPermissions.map((permission) => {
       return {
-        subject: permission.object.name,
+        subject: permission.subject.name,
         action: permission.action as PermissionAction,
         conditions: parseCondition(permission.condition, user),
       };
