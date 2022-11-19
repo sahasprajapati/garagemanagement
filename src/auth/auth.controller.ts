@@ -1,14 +1,18 @@
 import { MongoAbility } from '@casl/ability';
+import { PermissionSubject } from '@common/enums/permission-subject.enum';
+import { CustomPolicyHandler } from '@common/handlers/policy.handler';
 import {
-  Body, Controller, Get, Post, Request, UseGuards
+  Body,
+  Controller,
+  Get,
+  Post,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { PermissionAction } from '@src/common/enums/permission.enum';
 import { AuthService } from './auth.service';
-import {
-  CaslAbilityFactory,
-  PermissionSubject
-} from './casl-ability.factory/casl-ability.factory';
+import { CaslAbilityFactory } from './casl-ability.factory/casl-ability.factory';
 import { LocalAuthGuard } from './decorator/auth.guard';
 import { JwtAuthGuard } from './decorator/jwt-auth.guard';
 import { CheckPolicies } from './decorator/policy.decorator';
@@ -51,14 +55,12 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @UseGuards(PoliciesGuard)
   @CheckPolicies(
-    (ability: MongoAbility) => {
-      return ability.can(PermissionAction.Read, PermissionSubject.User);
-    }
+    new CustomPolicyHandler(PermissionAction.Read, PermissionSubject.User),
   )
   @Get('protected')
   async protectedData(@Request() req) {
     return {
-      data: "Protected data"
-    }
+      data: 'Protected data',
+    };
   }
 }

@@ -29,11 +29,20 @@ export const paginate = async <Model, FindParams>(
 ) => {
   // CRUD operations
   let entities = await (model as any).findMany(criteria);
-  delete criteria["select"];
-  
+  delete criteria['select'];
+
   const itemCount = await (model as any).count(criteria);
 
   const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
 
   return new PageDto<Model>(entities, pageMetaDto);
+};
+
+export const paginateFilter = (
+  filter: string,
+): { contains?: string; mode?: 'insensitive' } => {
+  return filter ? { contains: filter, mode: 'insensitive' } : {};
+};
+export const paginateSearch = (filter: string): { search?: string } => {
+  return filter ? { search: filter.split(" ").join(" | ") } : {};
 };

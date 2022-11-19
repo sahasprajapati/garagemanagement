@@ -9,7 +9,7 @@ export class PageOptionsDto {
   @IsOptional()
   readonly order?: Order = Order.ASC;
 
-  @ApiPropertyOptional({ enum: Order, default: Order.ASC })
+  @ApiPropertyOptional({ type: String })
   @IsString()
   @IsOptional()
   readonly filter?: string;

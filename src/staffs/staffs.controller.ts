@@ -11,7 +11,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { PermissionsGuard } from '@src/auth/decorator/permission.guard';
 import { PageOptionsDto } from '@src/common/dtos/pagination/page-options.dto';
 import { Staff } from '@src/_gen/prisma-class/staff';
@@ -35,6 +35,7 @@ export class StaffDto extends IntersectionType(
 
 @Controller('staffs')
 @ApiBearerAuth()
+@ApiTags('staffs')
 export class StaffsController {
   constructor(private readonly staffsService: StaffsService) {}
 

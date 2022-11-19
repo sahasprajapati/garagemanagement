@@ -1,7 +1,6 @@
 import { PageOptionsDto } from '@src/common/dtos/pagination/page-options.dto';
 import { PageDto } from '@src/common/dtos/pagination/page.dto';
 import { FindAllRoleWithSelect } from './dto/role.dto';
-import { PermissionAction } from './../../prisma/seed';
 import { PermissionsGuard } from '@src/auth/decorator/permission.guard';
 import {
   Controller,
@@ -19,11 +18,13 @@ import {
 import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
-import { ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { CheckPermissions } from '@src/auth/decorator/permissions.decorator';
+import { PermissionAction } from '@common/enums/permission.enum';
 
 @Controller('roles')
 @ApiBearerAuth()
+@ApiTags('roles')
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 

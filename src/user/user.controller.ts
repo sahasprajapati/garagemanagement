@@ -1,33 +1,31 @@
-import { PermissionAction } from './../../prisma/seed';
-import { FindAllUserWithSelect, UserSelect } from '@src/user/dto/user.dto';
+import { ApiCustomResponse } from '@common/decorators/api-custom-response.decorator';
+import { ApiPaginatedResponse } from '@common/decorators/api-paginated-response.decorator';
+import { ResponseDto } from '@common/dtos/response.dto';
+import { PermissionSubject } from '@common/enums/permission-subject.enum';
+import { ResponseMessage } from '@common/enums/response.enum';
+import { CustomPolicyHandler } from '@common/handlers/policy.handler';
+import { User } from '@gen/prisma-class/user';
 import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-  ForbiddenException,
-  UseInterceptors,
-  ClassSerializerInterceptor,
-  HttpCode,
-  HttpStatus,
-  Query,
+  Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, UseInterceptors
 } from '@nestjs/common';
-import { UsersService } from './user.service';
-import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth, ApiOkResponse,
+  ApiTags
+} from '@nestjs/swagger';
+import { CaslAbilityFactory } from '@src/auth/casl-ability.factory/casl-ability.factory';
 import { PermissionsGuard } from '@src/auth/decorator/permission.guard';
 import { CheckPermissions } from '@src/auth/decorator/permissions.decorator';
+import { CheckPolicies } from '@src/auth/decorator/policy.decorator';
+import { PageOptionsDto } from '@src/common/dtos/pagination/page-options.dto';
+import { PermissionAction } from '@src/common/enums/permission.enum';
 import {
-  CaslAbilityFactory,
-} from '@src/auth/casl-ability.factory/casl-ability.factory';
+  UserFindAllDto
+} from '@src/user/dto/user.dto';
+import { generateRepsonseMessage } from './../roles/response';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserEntity } from './entities/user.entity';
-import { PageOptionsDto } from '@src/common/dtos/pagination/page-options.dto';
-import { PageDto } from '@src/common/dtos/pagination/page.dto';
+import { UsersService } from './user.service';
 
 @Controller('users')
 @ApiBearerAuth()
@@ -40,16 +38,25 @@ export class UsersController {
   ) {}
 
   @Post()
-  @ApiCreatedResponse({ type: UserEntity })
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  @ApiCustomResponse(User)
+  @CheckPolicies(
+    new CustomPolicyHandler(PermissionAction.Create, PermissionSubject.User),
+  )
+  async create(@Body() createUserDto: CreateUserDto) {
+    return new ResponseDto(
+      generateRepsonseMessage({
+        model: 'User',
+        message: ResponseMessage.Create,
+      }),
+      await this.usersService.create(createUserDto),
+    );
   }
 
   @Get()
-  @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({ type: PageDto<FindAllUserWithSelect> })
-  @UseGuards(PermissionsGuard)
-  @CheckPermissions([PermissionAction.Read, 'User'])
+  @ApiPaginatedResponse(UserFindAllDto, true)
+  @CheckPolicies(
+    new CustomPolicyHandler(PermissionAction.Read, PermissionSubject.User),
+  )
   async findAll(@Query() pageOptionsDto: PageOptionsDto) {
     // const ability = await this.abilityFactory.createForUser(req.user)
     // ability.can()
@@ -60,20 +67,49 @@ export class UsersController {
   }
 
   @Get(':id')
-  @ApiOkResponse({ type: UserEntity })
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  @ApiCustomResponse(UserFindAllDto, true)
+  @CheckPolicies(
+    new CustomPolicyHandler(PermissionAction.Read, PermissionSubject.User),
+  )
+  async findOne(@Param('id') id: string) {
+    return new ResponseDto(
+      generateRepsonseMessage({
+        model: 'User',
+        message: ResponseMessage.Read,
+      }),
+      await this.usersService.findOne(+id),
+    );
   }
 
   @Patch(':id')
+  @ApiCustomResponse(UserFindAllDto, true)
+  @CheckPolicies(
+    new CustomPolicyHandler(PermissionAction.Update, PermissionSubject.User),
+  )
   @ApiOkResponse({ type: UserEntity })
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return new ResponseDto(
+      generateRepsonseMessage({
+        model: 'User',
+        message: ResponseMessage.Update,
+      }),
+      await this.usersService.update(+id, updateUserDto),
+    );
   }
 
   @Delete(':id')
+  @ApiCustomResponse(UserFindAllDto, true)
+  @CheckPolicies(
+    new CustomPolicyHandler(PermissionAction.Delete, PermissionSubject.User),
+  )
   @ApiOkResponse({ type: UserEntity })
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return new ResponseDto(
+      generateRepsonseMessage({
+        model: 'User',
+        message: ResponseMessage.Delete,
+      }),
+      await this.usersService.remove(+id),
+    );
   }
 }

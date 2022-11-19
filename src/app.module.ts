@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { APP_FILTER } from '@nestjs/core';
+import { AllExceptionsFilter } from './all-exception.filter';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -8,15 +10,14 @@ import { StaffsModule } from './staffs/staffs.module';
 import { UsersModule } from './user/user.module';
 
 @Module({
-  imports: [
-    PrismaModule,
-    
-    AuthModule,
-    UsersModule,
-    StaffsModule,
-    RolesModule,
-  ],
+  imports: [PrismaModule, AuthModule, UsersModule, StaffsModule, RolesModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
+  ],
 })
 export class AppModule {}

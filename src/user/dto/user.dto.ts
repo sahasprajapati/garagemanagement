@@ -1,5 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, IntersectionType, PickType } from '@nestjs/swagger';
 import { Prisma } from '@prisma/client';
+import { User } from '@gen/prisma-class/user';
+import { UserRelations } from '@gen/prisma-class/user_relations';
 
 export class UserDto {
   @ApiProperty()
@@ -33,3 +35,9 @@ export const UserSelect = Prisma.validator<Prisma.UserSelect>()({
 export type FindAllUserWithSelect = Prisma.UserGetPayload<{
   select: typeof UserSelect;
 }>;
+
+
+export class UserFindAllDto extends IntersectionType(
+  User,
+  PickType(UserRelations, ['role'] as const),
+) {}

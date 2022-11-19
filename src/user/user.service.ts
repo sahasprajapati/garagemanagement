@@ -1,9 +1,11 @@
+import { verifyEntity } from '@common/utils/verifyEntity';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PageOptionsDto } from '@src/common/dtos/pagination/page-options.dto';
 import { paginate } from '@src/common/utils/paginate';
 import { PrismaService } from '@src/prisma/prisma.service';
 import { PageDto } from '../common/dtos/pagination/page.dto';
+import { paginateFilter } from './../common/utils/paginate';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FindAllUserWithSelect } from './dto/user.dto';
@@ -12,7 +14,15 @@ import { FindAllUserWithSelect } from './dto/user.dto';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto) {
+    const userExists = await verifyEntity({
+      model: this.prisma.user,
+      name: 'User email',
+      findCondition: {
+        email: createUserDto.email,
+      },
+      throwExistError: true,
+    });
     return this.prisma.user.create({
       data: {
         name: createUserDto.name,
@@ -30,9 +40,25 @@ export class UsersService {
     // this.prisma.user.findMany();
     const criteria: Prisma.UserFindManyArgs = {
       where: {
-        name: {
-          ...(pageOptionsDto.filter ? { search: pageOptionsDto.filter } : {}),
-        },
+        OR: [
+          {
+            name: {
+              ...paginateFilter(pageOptionsDto.filter),
+            },
+          },
+          {
+            email: {
+              ...paginateFilter(pageOptionsDto.filter),
+            },
+          },
+          {
+            role: {
+              name: {
+                ...paginateFilter(pageOptionsDto.filter),
+              },
+            },
+          },
+        ],
       },
       skip: pageOptionsDto.skip,
       take: pageOptionsDto.take,
@@ -58,10 +84,26 @@ export class UsersService {
     return users;
   }
 
-  findOne(id: number) {
+  async findOne(id: number) {
+    await verifyEntity({
+      model: this.prisma.user,
+      name: 'User',
+      id,
+    });
     return this.prisma.user.findFirst({
       where: {
         id: id,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
   }
@@ -71,10 +113,27 @@ export class UsersService {
       where: {
         email: email,
       },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        password: true,
+        role: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    await verifyEntity({
+      model: this.prisma.user,
+      name: 'User',
+      id,
+    });
     return this.prisma.user.update({
       where: { id },
 
@@ -82,7 +141,12 @@ export class UsersService {
     });
   }
 
-  remove(id: number) {
+  async remove(id: number) {
+    await verifyEntity({
+      model: this.prisma.user,
+      name: 'User',
+      id,
+    });
     return this.prisma.user.delete({ where: { id } });
   }
 }

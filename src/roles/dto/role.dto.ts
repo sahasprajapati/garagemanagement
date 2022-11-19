@@ -10,7 +10,7 @@ const RoleSelect = Prisma.validator<Prisma.RoleSelect>()({
         select: {
           action: true,
           condition: true,
-          object: {
+          subject: {
             select: {
               name: true,
             },

@@ -1,18 +1,22 @@
-import { Prisma } from "@prisma/client";
-import { fstat, writeFile, writeFileSync } from "fs";
+import { Prisma } from '@prisma/client';
+import { writeFile } from 'fs/promises';
+export const modelNameGenerator = async () => {
+  const enumStart = 'export enum PermissionSubject {' + '\n';
+  let enumBody = '';
+  Prisma.dmmf.datamodel.models.map((model) => {
+    enumBody += `  '${model.name.trim()}' = '${model.name
+      .trim()
+      .toLowerCase()}', \n`;
+  });
+  const enumEnd = '}';
 
-export const  modelNameGenerator = () =>{
-    const modelNames = Prisma.dmmf.datamodel.models.map((model) => {
-        return model.name;
-      });
-    const names  = {
-      models: modelNames,
-    }
-
-    const json = JSON.stringify(names);
-    writeFile("./src/models.json", json, "utf-8", (err) => {
-      if(err){
-        console.error("Error generating models", err)
-      }
-    })
-}
+  const enumFile = enumStart + enumBody + enumEnd;
+  await writeFile(
+    './src/common/enums/permission-subject.enum.ts',
+    enumFile,
+    'utf-8',
+  ).catch((err) => {
+    console.error('Error generating models', err);
+  });
+  console.log('Generated  models from enum');
+};

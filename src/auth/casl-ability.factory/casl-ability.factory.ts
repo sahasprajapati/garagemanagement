@@ -5,11 +5,6 @@ import { PermissionAction } from '@src/common/enums/permission.enum';
 import { AuthService } from '../auth.service';
 import { parseCondition } from '../decorator/perminssion.entity';
 
-export enum PermissionSubject {
-  User = 'User',
-  Role = 'Role',
-  Staff = 'Staff',
-}
 
 export type PermissionObjectType = any;
 // export type AppAbility = Ability<[PermissionAction, PermissionObjectType]>;

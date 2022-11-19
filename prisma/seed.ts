@@ -2,19 +2,14 @@
 
 import { PrismaClient } from '@prisma/client';
 import { modelNameGenerator } from './generator';
-
-export enum PermissionAction {
-  Manage = 'manage',
-  Create = 'create',
-  Read = 'read',
-  Update = 'update',
-  Delete = 'delete',
-}
+import {PermissionSubject}  from '../src/common/enums/permission-subject.enum';
+import { PermissionAction } from '../src/common/enums/permission.enum';
 
 // initialize Prisma Client
 const prisma = new PrismaClient();
 
 async function main() {
+  await modelNameGenerator()
   const role = await prisma.role.upsert({
     where: {
       name: 'super',
@@ -25,42 +20,53 @@ async function main() {
     },
   });
 
-  const subject = await prisma.subject.upsert({
-    where: {
-      name: 'User',
-    },
-    update: {},
-    create: {
-      name: 'User',
-    },
-  });
-  const permission = await prisma.permission.upsert({
-    where: {
-      permissionIdentifier: {
-        subjectId: subject.id,
-        action: PermissionAction.Read,
+  const subjects = await Promise.all(Object.values(PermissionSubject).map(async (subject) => {
+    const sub = await prisma.subject.upsert({
+      where: {
+        name: subject,
       },
-    },
-    update: {},
-    create: {
-      subjectId: subject.id,
-      action: PermissionAction.Read,
-    },
-  });
+      update: {},
+      create: {
+        name: subject,
+      },
+    });
 
-  const permission_role = await prisma.rolePermission.upsert({
-    where: {
-      rolePermissionIdentifier: {
-        roleId: role.id,
-        permissionId: permission.id,
-      },
-    },
-    update: {},
-    create: {
-      roleId: role.id,
-      permissionId: permission.id,
-    },
-  });
+    return sub
+  }))
+
+
+  await Promise.all(Object.values(PermissionAction).map(async (action) => {
+    return await Promise.all(subjects.map(async(subject) => {
+
+      const permission = await prisma.permission.upsert({
+        where: {
+          permissionIdentifier: {
+            subjectId: subject.id,
+            action: action
+          },
+        },
+        update: {},
+        create: {
+          subjectId: subject.id,
+          action: action
+        },
+      })
+
+      const permission_role = await prisma.rolePermission.upsert({
+        where: {
+          rolePermissionIdentifier: {
+            roleId: role.id,
+            permissionId: permission.id,
+          },
+        },
+        update: {},
+        create: {
+          roleId: role.id,
+          permissionId: permission.id,
+        },
+      });
+    }))
+  }))
 
   const superUser = await prisma.user.upsert({
     where: { email: 'super@admin.com' },
@@ -74,7 +80,6 @@ async function main() {
   });
   console.log({ superUser });
 
-  modelNameGenerator();
 }
 
 // execute the main function
