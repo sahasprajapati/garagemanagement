@@ -10,6 +10,10 @@ import { PageOptionsDto } from '@src/common/dtos/pagination/page-options.dto';
 import { PageDto } from '@src/common/dtos/pagination/page.dto';
 import { FindAllUserWithSelect } from '@src/user/dto/user.dto';
 import { Order } from '@src/common/enums/order.enum';
+import { verifyEntity } from '@common/utils/verifyEntity';
+import { CreateStaffDesignationDto } from './dto/create-staff-designation.dto';
+import { StaffDesignation } from '@gen/prisma-class/staff_designation';
+import { UpdateStaffDesignationDto } from './dto/update-staff-designation.dto';
 
 enum AttendaceStatus {
   PRESENT = 'PRESENT',
@@ -21,38 +25,19 @@ enum AttendaceStatus {
 export class StaffsService {
   constructor(private prisma: PrismaService) {}
 
-  create(createStaffDto: CreateStaffDto) {
+  // Staff
+  async create(createStaffDto: CreateStaffDto) {
+    await verifyEntity({
+      model: this.prisma.staff,
+      name: 'Staff',
+      findCondition: {
+        mobile: createStaffDto.mobile,
+      },
+      throwExistError: true,
+    });
     return this.prisma.staff.create({ data: createStaffDto });
   }
 
-  // findAll() {
-  //   // CRUD operations
-  //   return this.prisma.staff.findMany({
-  //     select: {
-  //       leave: {
-  //         take: 1,
-  //         orderBy: {
-  //           createdAt: 'desc',
-  //         },
-  //         where: {
-  //           from: {
-  //             lte: new Date(),
-  //           },
-  //           to: {
-  //             gt: new Date(),
-  //           },
-  //         },
-  //       },
-  //       designation: true,
-  //       attendance: {
-  //         take: 1,
-  //         orderBy: {
-  //           createdAt: 'desc',
-  //         },
-  //       },
-  //     },
-  //   });
-  // }
   async findAll(
     pageOptionsDto: PageOptionsDto,
   ): Promise<PageDto<FindAllStaffWithSelect>> {
@@ -70,6 +55,10 @@ export class StaffsService {
         createdAt: pageOptionsDto.order,
       },
       select: {
+        id: true,
+        name: true,
+        mobile: true,
+
         leave: {
           take: 1,
           orderBy: {
@@ -100,7 +89,12 @@ export class StaffsService {
     return staffs;
   }
 
-  findOne(id: number) {
+  async findOne(id: number) {
+    await verifyEntity({
+      model: this.prisma.staff,
+      name: 'Staff',
+      id,
+    });
     return this.prisma.staff.findFirst({
       where: {
         id: id,
@@ -108,7 +102,14 @@ export class StaffsService {
     });
   }
 
-  findOneByName(name: string) {
+  async findOneByName(name: string) {
+    await verifyEntity({
+      model: this.prisma.staff,
+      name: 'Staff',
+      findCondition: {
+        name: name,
+      },
+    });
     return this.prisma.staff.findFirst({
       where: {
         name: name,
@@ -116,7 +117,12 @@ export class StaffsService {
     });
   }
 
-  update(id: number, updatestaffDto: UpdateStaffDto) {
+  async update(id: number, updatestaffDto: UpdateStaffDto) {
+    await verifyEntity({
+      model: this.prisma.staff,
+      name: 'Staff',
+      id,
+    });
     return this.prisma.staff.update({
       where: { id },
 
@@ -124,8 +130,88 @@ export class StaffsService {
     });
   }
 
-  remove(id: number) {
+  async remove(id: number) {
+    await verifyEntity({
+      model: this.prisma.staff,
+      name: 'Staff',
+      id,
+    });
     return this.prisma.staff.delete({ where: { id } });
+  }
+
+  // Staff Designation
+  async createDesignation(createStaffDto: CreateStaffDesignationDto) {
+    await verifyEntity({
+      model: this.prisma.staffDesignation,
+      name: 'Staff Designation',
+      findCondition: {
+        mobile: createStaffDto.name,
+      },
+      throwExistError: true,
+    });
+    return this.prisma.staffDesignation.create({ data: createStaffDto });
+  }
+
+  async findAllDesignation(
+    pageOptionsDto: PageOptionsDto,
+  ): Promise<PageDto<StaffDesignation>> {
+    // Get proper criteria using prisma findMany types
+    // this.prisma.user.findMany();
+    const criteria: Prisma.StaffDesignationFindManyArgs = {
+      where: {
+        name: {
+          ...(pageOptionsDto.filter ? { search: pageOptionsDto.filter } : {}),
+        },
+      },
+      skip: pageOptionsDto.skip,
+      take: pageOptionsDto.take,
+      orderBy: {
+        createdAt: pageOptionsDto.order,
+      },
+    };
+    const staffDesignations = await paginate<
+      StaffDesignation,
+      Prisma.StaffDesignationFindManyArgs
+    >(this.prisma.staffDesignation, criteria, pageOptionsDto);
+    return staffDesignations;
+  }
+
+  async findOneDesignation(id: number) {
+    await verifyEntity({
+      model: this.prisma.staffDesignation,
+      name: 'Staff Designation',
+      id,
+    });
+    return this.prisma.staffDesignation.findFirst({
+      where: {
+        id: id,
+      },
+    });
+  }
+
+  async updateDesignation(
+    id: number,
+    updatestaffDto: UpdateStaffDesignationDto,
+  ) {
+    await verifyEntity({
+      model: this.prisma.staff,
+      name: 'Staff Designation',
+      id,
+    });
+    return this.prisma.staffDesignation.update({
+      where: { id },
+
+      data: updatestaffDto,
+    });
+  }
+
+  async removeDesgination(id: number) {
+    await verifyEntity({
+      model: this.prisma.staff,
+      name: 'Staff Designation',
+      id,
+    });
+    return this.prisma.staffDesignation.delete({ where: { id } });
   }
 
   async staffAttendance(

@@ -12,13 +12,17 @@ generator prismaClassGenerator {
   dryRun                 = false
 }
 
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model Permission {
-  id              Int               @id @default(autoincrement())
+  id              Int              @id @default(autoincrement())
   action          String
   rolePermissions RolePermission[]
 
@@ -78,14 +82,15 @@ model User {
 model Staff {
   id                 Int              @id @default(autoincrement())
   name               String
-  mobile             Int              @unique
+  mobile             String           @unique
   designation        StaffDesignation @relation(fields: [staffDesignationId], references: [id])
   staffDesignationId Int
   attendance         Attendance[]
   leave              Leave[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  Service   Service[]
 }
 
 model StaffDesignation {
@@ -126,4 +131,129 @@ enum AttendaceStatus {
   PRESENT
   ABSENT
   LEAVE
+}
+
+model Customer {
+  id Int @id @default(autoincrement())
+
+  name    String
+  mobile  String  @unique
+  email   String?
+  address String?
+
+  transaction Transaction[]
+  Vehicle     Vehicle[]
+  Service     Service[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Transaction {
+  id     Int           @id @default(autoincrement())
+  medium PaymentMedium @default(CASH)
+
+  Service    Service   @relation(fields: [serviceId], references: [id])
+  serviceId  Int       @unique
+  Customer   Customer? @relation(fields: [customerId], references: [id])
+  customerId Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Vehicle {
+  id           Int     @id @default(autoincrement())
+  name         String
+  fuel         String?
+  kilometerRun String?
+  engine       String?
+  mileage      String?
+  makeYear     String?
+  transmission String?
+  color        String?
+  features     String?
+
+  price                String?
+  wheelerType          VehicleWheelerType @relation(fields: [vehicleWheelerTypeId], references: [id])
+  type                 VehicleType        @relation(fields: [vehicleTypeId], references: [id])
+  brand                VehicleBrand       @relation(fields: [vehicleBrandId], references: [id])
+  vehicleWheelerTypeId Int
+  vehicleTypeId        Int
+  vehicleBrandId       Int
+
+  customer   Customer? @relation(fields: [customerId], references: [id])
+  customerId Int?
+  Service    Service[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model VehicleBrand {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  VehicleWheelerType   VehicleWheelerType? @relation(fields: [vehicleWheelerTypeId], references: [id])
+  vehicleWheelerTypeId Int?
+  Vehicle              Vehicle[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model VehicleType {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  VehicleWheelerType   VehicleWheelerType? @relation(fields: [vehicleWheelerTypeId], references: [id])
+  vehicleWheelerTypeId Int?
+  Vehicle              Vehicle[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+// Car/Bike
+model VehicleWheelerType {
+  id      Int            @id @default(autoincrement())
+  name    String
+  types   VehicleType[]
+  brands  VehicleBrand[]
+  Vehicle Vehicle[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+enum PaymentMedium {
+  CASH
+  CREDIT
+  ESEWA
+  KHALTI
+  FONEPAY
+}
+
+model Service {
+  id Int @id @default(autoincrement())
+
+  customer   Customer @relation(fields: [customerId], references: [id])
+  customerId Int
+
+  vehicle   Vehicle @relation(fields: [vehicleId], references: [id])
+  vehicleId Int
+
+  transaction Transaction?
+
+  staff   Staff? @relation(fields: [staffId], references: [id])
+  staffId Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+enum ServiceOffered {
+  RECONDITION
+  WASH
+  SERVICING
 }

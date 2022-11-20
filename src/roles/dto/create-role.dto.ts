@@ -1,4 +1,8 @@
+import { ApiProperty } from '@nestjs/swagger';
+
 export class CreateRoleDto {
-    name: string;
-    permissionIds: number[];
+  @ApiProperty()
+  name: string;
+  @ApiProperty()
+  permissionIds: number[];
 }

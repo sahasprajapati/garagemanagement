@@ -23,6 +23,13 @@ export class UsersService {
       },
       throwExistError: true,
     });
+    await verifyEntity({
+      model: this.prisma.role,
+      name: 'Role ',
+      findCondition: {
+        id: createUserDto.roleId,
+      },
+    });
     return this.prisma.user.create({
       data: {
         name: createUserDto.name,

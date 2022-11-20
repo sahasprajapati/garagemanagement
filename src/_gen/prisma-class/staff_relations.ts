@@ -1,6 +1,7 @@
 import { StaffDesignation } from './staff_designation';
 import { Attendance } from './attendance';
 import { Leave } from './leave';
+import { Service } from './service';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class StaffRelations {
@@ -12,4 +13,7 @@ export class StaffRelations {
 
   @ApiProperty({ isArray: true, type: () => Leave })
   leave: Leave[] = undefined;
+
+  @ApiProperty({ isArray: true, type: () => Service })
+  Service: Service[] = undefined;
 }

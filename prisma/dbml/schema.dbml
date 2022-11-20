@@ -1,0 +1,252 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table Permission {
+  id Int [pk, increment]
+  action String [not null]
+  rolePermissions RolePermission [not null]
+  condition Json
+  subject Subject
+  subjectId Int
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+
+  indexes {
+    (action, subjectId) [unique]
+  }
+}
+
+Table Subject {
+  id Int [pk, increment]
+  name String [unique, not null]
+  permissions Permission [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+}
+
+Table RolePermission {
+  id Int [pk, increment]
+  role Role
+  roleId Int
+  permission Permission
+  permissionId Int
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+
+  indexes {
+    (roleId, permissionId) [unique]
+  }
+}
+
+Table Role {
+  id Int [pk, increment]
+  name String [unique, not null]
+  user User [not null]
+  rolePermissions RolePermission [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+}
+
+Table User {
+  id Int [pk, increment]
+  email String [unique, not null]
+  role Role
+  roleId Int
+  password String [not null]
+  name String [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+}
+
+Table Staff {
+  id Int [pk, increment]
+  name String [not null]
+  mobile String [unique, not null]
+  designation StaffDesignation [not null]
+  staffDesignationId Int [not null]
+  attendance Attendance [not null]
+  leave Leave [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+  Service Service [not null]
+}
+
+Table StaffDesignation {
+  id Int [pk, increment]
+  name String [unique, not null]
+  description String
+  staff Staff [not null]
+  totalLeave Int [not null, default: 15]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+}
+
+Table Attendance {
+  id Int [pk, increment]
+  staff Staff [not null]
+  staffId Int [not null]
+  status AttendaceStatus [not null, default: 'ABSENT']
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+}
+
+Table Leave {
+  id Int [pk, increment]
+  days Int [not null, default: 0]
+  description String [not null]
+  staff Staff [not null]
+  staffId Int [not null]
+  from DateTime [not null]
+  to DateTime [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+}
+
+Table Customer {
+  id Int [pk, increment]
+  name String [not null]
+  mobile String [unique, not null]
+  email String
+  address String
+  transaction Transaction [not null]
+  Vehicle Vehicle [not null]
+  Service Service [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+}
+
+Table Transaction {
+  id Int [pk, increment]
+  medium PaymentMedium [not null, default: 'CASH']
+  Service Service [not null]
+  serviceId Int [unique, not null]
+  Customer Customer
+  customerId Int
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+}
+
+Table Vehicle {
+  id Int [pk, increment]
+  name String [not null]
+  fuel String
+  kilometerRun String
+  engine String
+  mileage String
+  makeYear String
+  transmission String
+  color String
+  features String
+  price String
+  wheelerType VehicleWheelerType [not null]
+  type VehicleType [not null]
+  brand VehicleBrand [not null]
+  vehicleWheelerTypeId Int [not null]
+  vehicleTypeId Int [not null]
+  vehicleBrandId Int [not null]
+  customer Customer
+  customerId Int
+  Service Service [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+}
+
+Table VehicleBrand {
+  id Int [pk, increment]
+  name String [not null]
+  VehicleWheelerType VehicleWheelerType
+  vehicleWheelerTypeId Int
+  Vehicle Vehicle [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+}
+
+Table VehicleType {
+  id Int [pk, increment]
+  name String [not null]
+  VehicleWheelerType VehicleWheelerType
+  vehicleWheelerTypeId Int
+  Vehicle Vehicle [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+}
+
+Table VehicleWheelerType {
+  id Int [pk, increment]
+  name String [not null]
+  types VehicleType [not null]
+  brands VehicleBrand [not null]
+  Vehicle Vehicle [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+}
+
+Table Service {
+  id Int [pk, increment]
+  customer Customer [not null]
+  customerId Int [not null]
+  vehicle Vehicle [not null]
+  vehicleId Int [not null]
+  transaction Transaction
+  staff Staff
+  staffId Int
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+}
+
+Enum AttendaceStatus {
+  PRESENT
+  ABSENT
+  LEAVE
+}
+
+Enum PaymentMedium {
+  CASH
+  CREDIT
+  ESEWA
+  KHALTI
+  FONEPAY
+}
+
+Enum ServiceOffered {
+  RECONDITION
+  WASH
+  SERVICING
+}
+
+Ref: Permission.subjectId > Subject.id
+
+Ref: RolePermission.roleId > Role.id
+
+Ref: RolePermission.permissionId > Permission.id
+
+Ref: User.roleId > Role.id
+
+Ref: Staff.staffDesignationId > StaffDesignation.id
+
+Ref: Attendance.staffId > Staff.id
+
+Ref: Leave.staffId > Staff.id
+
+Ref: Transaction.serviceId - Service.id
+
+Ref: Transaction.customerId > Customer.id
+
+Ref: Vehicle.vehicleWheelerTypeId > VehicleWheelerType.id
+
+Ref: Vehicle.vehicleTypeId > VehicleType.id
+
+Ref: Vehicle.vehicleBrandId > VehicleBrand.id
+
+Ref: Vehicle.customerId > Customer.id
+
+Ref: VehicleBrand.vehicleWheelerTypeId > VehicleWheelerType.id
+
+Ref: VehicleType.vehicleWheelerTypeId > VehicleWheelerType.id
+
+Ref: Service.customerId > Customer.id
+
+Ref: Service.vehicleId > Vehicle.id
+
+Ref: Service.staffId > Staff.id
