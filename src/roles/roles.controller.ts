@@ -14,6 +14,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -106,6 +107,20 @@ export class RolesController {
         message: ResponseMessage.Delete,
       }),
       await this.rolesService.remove(+id),
+    );
+  }
+  @Put('/delete')
+  @ApiCustomResponse(RoleFindAllDto, true)
+  @CheckPolicies(
+    new CustomPolicyHandler(PermissionAction.Delete, PermissionSubject.User),
+  )
+  async removeMulti(@Body('ids') ids: number[]) {
+    return new ResponseDto(
+      generateRepsonseMessage({
+        model: 'User',
+        message: ResponseMessage.Delete,
+      }),
+      await this.rolesService.removeMulti(ids),
     );
   }
 }

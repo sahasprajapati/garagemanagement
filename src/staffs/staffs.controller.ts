@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Query,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -14,7 +15,7 @@ import { PermissionAction } from '@src/common/enums/permission.enum';
 import { StaffRelations } from '@src/_gen/prisma-class/staff_relations';
 import { generateRepsonseMessage } from './../roles/response';
 import { CreateStaffDto } from './dto/create-staff.dto';
-import { UpdateStaffDto } from './dto/update-staff.dto';
+import { UpdateAttendanceDto, UpdateStaffDto } from './dto/update-staff.dto';
 import { StaffsService } from './staffs.service';
 
 import { ApiCustomResponse } from '@common/decorators/api-custom-response.decorator';
@@ -30,6 +31,10 @@ import { Staff } from '@gen/prisma-class/staff';
 import { StaffDesignation } from '@gen/prisma-class/staff_designation';
 import { CreateStaffDesignationDto } from './dto/create-staff-designation.dto';
 import { UpdateStaffDesignationDto } from './dto/update-staff-designation.dto';
+import { UserFindAllDto } from '@src/user/dto/user.dto';
+import { CreateLeaveDto } from './dto/create-leave.dto';
+import { Leave } from '@gen/prisma-class/leave';
+import { UpdateLeaveDto } from './dto/update-leave.dto';
 // import { Product } from './product'
 // import { ProductRelations } from './product_relations'
 
@@ -143,6 +148,36 @@ export class StaffsController {
     );
   }
 
+  // ---------LEAVE--------
+  @Post("/leave")
+  @ApiCustomResponse(Leave)
+  @CheckPolicies(
+    new CustomPolicyHandler(PermissionAction.Create, PermissionSubject.Leave),
+  )
+  async createStaffLeave(@Body() createStaffLeaveDto: CreateLeaveDto) {
+    return new ResponseDto(
+      generateRepsonseMessage({
+        model: 'Leave',
+        message: ResponseMessage.Create,
+      }),
+      await this.staffsService.applyLeave(createStaffLeaveDto),
+    );
+  }
+
+  @Patch('leave/:id')
+  @ApiCustomResponse(StaffFindAllDto, true)
+  @CheckPolicies(
+    new CustomPolicyHandler(PermissionAction.Update, PermissionSubject.User),
+  )
+  async updateLeave(@Param('id') id: string, @Body() updateStaffLeaveDto: UpdateLeaveDto) {
+    return new ResponseDto(
+      generateRepsonseMessage({
+        model: 'Leave',
+        message: ResponseMessage.Update,
+      }),
+      await this.staffsService.updateLeave(+id, updateStaffLeaveDto),
+    );
+  }
 
 
 
@@ -175,7 +210,47 @@ export class StaffsController {
     // }
     return this.staffsService.findAll(pageOptionsDto);
   }
+  @Get()
+  @ApiPaginatedResponse(StaffFindAllDto, true)
+  @CheckPolicies(
+    new CustomPolicyHandler(PermissionAction.Read, PermissionSubject.User),
+  )
+  async findAllOnLeave(@Query() pageOptionsDto: PageOptionsDto) {
+    // const ability = await this.abilityFactory.createForUser(req.user)
+    // ability.can()
+    // if (ability.can(PermissionAction.READ, condition)) {
+    //   throw new ForbiddenException("You dont have access to this resource!");
+    // }
+    return this.staffsService.staffsOnLeave(pageOptionsDto);
+  }
 
+  @Get('onLeave')
+  @ApiPaginatedResponse(StaffFindAllDto, true)
+  @CheckPolicies(
+    new CustomPolicyHandler(PermissionAction.Read, PermissionSubject.User),
+  )
+  async findAllStaffsOnLeave(@Query() pageOptionsDto: PageOptionsDto) {
+    // const ability = await this.abilityFactory.createForUser(req.user)
+    // ability.can()
+    // if (ability.can(PermissionAction.READ, condition)) {
+    //   throw new ForbiddenException("You dont have access to this resource!");
+    // }
+    return this.staffsService.staffsOnLeave(pageOptionsDto);
+  }
+
+  @Get('attendance')
+  @ApiPaginatedResponse(StaffFindAllDto, true)
+  @CheckPolicies(
+    new CustomPolicyHandler(PermissionAction.Read, PermissionSubject.User),
+  )
+  async findAllStaffAttendance(@Query() pageOptionsDto: PageOptionsDto) {
+    // const ability = await this.abilityFactory.createForUser(req.user)
+    // ability.can()
+    // if (ability.can(PermissionAction.READ, condition)) {
+    //   throw new ForbiddenException("You dont have access to this resource!");
+    // }
+    return this.staffsService.findAllStaffsAttendance(pageOptionsDto);
+  }
   @Get(':id')
   @ApiCustomResponse(StaffFindAllDto, true)
   @CheckPolicies(
@@ -188,6 +263,21 @@ export class StaffsController {
         message: ResponseMessage.Read,
       }),
       await this.staffsService.findOne(+id),
+    );
+  }
+
+  @Patch('attendance')
+  @ApiCustomResponse(StaffFindAllDto, true)
+  @CheckPolicies(
+    new CustomPolicyHandler(PermissionAction.Update, PermissionSubject.User),
+  )
+  async updateAttendance(@Body() updateAttendanceDto: UpdateAttendanceDto) {
+    return new ResponseDto(
+      generateRepsonseMessage({
+        model: 'Staff',
+        message: ResponseMessage.Update,
+      }),
+      await this.staffsService.updateAttendance(updateAttendanceDto),
     );
   }
 
@@ -220,5 +310,21 @@ export class StaffsController {
       await this.staffsService.remove(+id),
     );
   }
+
+  @Put('/delete')
+  @ApiCustomResponse(UserFindAllDto, true)
+  @CheckPolicies(
+    new CustomPolicyHandler(PermissionAction.Delete, PermissionSubject.User),
+  )
+  async removeMulti(@Body('ids') ids: number[]) {
+    return new ResponseDto(
+      generateRepsonseMessage({
+        model: 'Staff',
+        message: ResponseMessage.Delete,
+      }),
+      await this.staffsService.removeMulti(ids),
+    );
+  }
+
 
 }

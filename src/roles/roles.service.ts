@@ -82,6 +82,7 @@ export class RolesService {
           select: {
             permission: {
               select: {
+                id: true,
                 action: true,
                 condition: true,
                 subject: {
@@ -170,10 +171,37 @@ export class RolesService {
       name: 'Role',
       id,
     });
-    return this.prisma.role.update({
-      where: { id },
-      data: updateroleDto,
+
+    const role = await this.prisma.role.update({
+      where: {
+        id,
+      },
+      data: {
+        name: updateroleDto.name,
+      },
     });
+    const role_permission = updateroleDto.permissionIds.map(
+      async (permissionId) => {
+        await this.prisma.rolePermission.upsert({
+          where: {
+            rolePermissionIdentifier: {
+              roleId: role.id,
+              permissionId: +permissionId,
+            },
+          },
+          create: {
+            roleId: role.id,
+            permissionId: +permissionId,
+          },
+          update: {
+            roleId: role.id,
+            permissionId: +permissionId,
+          },
+        });
+      },
+    );
+
+    return role;
   }
 
   async remove(id: number) {
@@ -183,5 +211,20 @@ export class RolesService {
       id,
     });
     return this.prisma.role.delete({ where: { id } });
+  }
+
+  async removeMulti(ids: number[]) {
+    // await verifyEntity({
+    //   model: this.prisma.role,
+    //   name: 'Role',
+    //   id,
+    // });
+    return this.prisma.role.deleteMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    });
   }
 }

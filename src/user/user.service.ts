@@ -156,4 +156,19 @@ export class UsersService {
     });
     return this.prisma.user.delete({ where: { id } });
   }
+
+  async removeMulti(ids: number[]) {
+    // await verifyEntity({
+    //   model: this.prisma.role,
+    //   name: 'Role',
+    //   id,
+    // });
+    return this.prisma.user.deleteMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    });
+  }
 }

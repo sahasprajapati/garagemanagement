@@ -6,7 +6,7 @@ import { ResponseMessage } from '@common/enums/response.enum';
 import { CustomPolicyHandler } from '@common/handlers/policy.handler';
 import { User } from '@gen/prisma-class/user';
 import {
-  Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards, UseInterceptors
+  Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, Patch, Post, Put, Query, UseGuards, UseInterceptors
 } from '@nestjs/common';
 import {
   ApiBearerAuth, ApiOkResponse,
@@ -110,6 +110,21 @@ export class UsersController {
         message: ResponseMessage.Delete,
       }),
       await this.usersService.remove(+id),
+    );
+  }
+
+  @Put('/delete')
+  @ApiCustomResponse(UserFindAllDto, true)
+  @CheckPolicies(
+    new CustomPolicyHandler(PermissionAction.Delete, PermissionSubject.User),
+  )
+  async removeMulti(@Body('ids') ids: number[]) {
+    return new ResponseDto(
+      generateRepsonseMessage({
+        model: 'User',
+        message: ResponseMessage.Delete,
+      }),
+      await this.usersService.removeMulti(ids),
     );
   }
 }
