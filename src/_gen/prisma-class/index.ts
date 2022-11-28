@@ -10,6 +10,7 @@ import { LeaveRelations as _LeaveRelations } from './leave_relations';
 import { CustomerRelations as _CustomerRelations } from './customer_relations';
 import { TransactionRelations as _TransactionRelations } from './transaction_relations';
 import { VehicleRelations as _VehicleRelations } from './vehicle_relations';
+import { OwnedVehicleRelations as _OwnedVehicleRelations } from './owned_vehicle_relations';
 import { VehicleBrandRelations as _VehicleBrandRelations } from './vehicle_brand_relations';
 import { VehicleTypeRelations as _VehicleTypeRelations } from './vehicle_type_relations';
 import { VehicleWheelerTypeRelations as _VehicleWheelerTypeRelations } from './vehicle_wheeler_type_relations';
@@ -26,6 +27,7 @@ import { Leave as _Leave } from './leave';
 import { Customer as _Customer } from './customer';
 import { Transaction as _Transaction } from './transaction';
 import { Vehicle as _Vehicle } from './vehicle';
+import { OwnedVehicle as _OwnedVehicle } from './owned_vehicle';
 import { VehicleBrand as _VehicleBrand } from './vehicle_brand';
 import { VehicleType as _VehicleType } from './vehicle_type';
 import { VehicleWheelerType as _VehicleWheelerType } from './vehicle_wheeler_type';
@@ -44,6 +46,7 @@ export namespace PrismaModel {
   export class CustomerRelations extends _CustomerRelations {}
   export class TransactionRelations extends _TransactionRelations {}
   export class VehicleRelations extends _VehicleRelations {}
+  export class OwnedVehicleRelations extends _OwnedVehicleRelations {}
   export class VehicleBrandRelations extends _VehicleBrandRelations {}
   export class VehicleTypeRelations extends _VehicleTypeRelations {}
   export class VehicleWheelerTypeRelations extends _VehicleWheelerTypeRelations {}
@@ -60,6 +63,7 @@ export namespace PrismaModel {
   export class Customer extends _Customer {}
   export class Transaction extends _Transaction {}
   export class Vehicle extends _Vehicle {}
+  export class OwnedVehicle extends _OwnedVehicle {}
   export class VehicleBrand extends _VehicleBrand {}
   export class VehicleType extends _VehicleType {}
   export class VehicleWheelerType extends _VehicleWheelerType {}
@@ -78,6 +82,7 @@ export namespace PrismaModel {
     CustomerRelations,
     TransactionRelations,
     VehicleRelations,
+    OwnedVehicleRelations,
     VehicleBrandRelations,
     VehicleTypeRelations,
     VehicleWheelerTypeRelations,
@@ -94,6 +99,7 @@ export namespace PrismaModel {
     Customer,
     Transaction,
     Vehicle,
+    OwnedVehicle,
     VehicleBrand,
     VehicleType,
     VehicleWheelerType,
