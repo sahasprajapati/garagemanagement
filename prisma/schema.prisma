@@ -105,16 +105,16 @@ model StaffDesignation {
 }
 
 model Attendance {
-  id        Int             @id @default(autoincrement())
-  staff     Staff           @relation(fields: [staffId], references: [id])
-  staffId   Int
-  status    AttendaceStatus @default(ABSENT)
-  date      DateTime
+  id      Int             @id @default(autoincrement())
+  staff   Staff           @relation(fields: [staffId], references: [id])
+  staffId Int
+  status  AttendaceStatus @default(ABSENT)
+  date    DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   @@unique([staffId, date], name: "attendanceIdentifier")
-  
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @default(now()) @updatedAt
 }
 
 model Leave {
@@ -145,7 +145,7 @@ model Customer {
   address String?
 
   transaction Transaction[]
-  Vehicle     Vehicle[]
+  vehicle     OwnedVehicle[]
   Service     Service[]
 
   createdAt DateTime @default(now())
@@ -169,37 +169,57 @@ model Vehicle {
   id           Int     @id @default(autoincrement())
   name         String
   fuel         String?
-  kilometerRun String?
   engine       String?
   mileage      String?
-  makeYear     String?
   transmission String?
-  color        String?
   features     String?
 
-  price                String?
-  wheelerType          VehicleWheelerType @relation(fields: [vehicleWheelerTypeId], references: [id])
-  type                 VehicleType        @relation(fields: [vehicleTypeId], references: [id])
-  brand                VehicleBrand       @relation(fields: [vehicleBrandId], references: [id])
-  vehicleWheelerTypeId Int
-  vehicleTypeId        Int
-  vehicleBrandId       Int
+  ownedVehicle OwnedVehicle[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model OwnedVehicle {
+  id Int @id @default(autoincrement())
+
+  kilometerRun String?
+  makeYear     String?
+  color        String?
+  price        String?
+  plate        String?
 
   customer   Customer? @relation(fields: [customerId], references: [id])
   customerId Int?
   Service    Service[]
 
+  vehicleWheelerTypeId Int
+  vehicleTypeId        Int
+  vehicleBrandId       Int
+  vehicleId            Int
+
+  wheelerType VehicleWheelerType @relation(fields: [vehicleWheelerTypeId], references: [id])
+  type        VehicleType        @relation(fields: [vehicleTypeId], references: [id])
+  brand       VehicleBrand       @relation(fields: [vehicleBrandId], references: [id])
+  vehicle     Vehicle            @relation(fields: [vehicleId], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+  // VehicleBrand         VehicleBrand?       @relation(fields: [vehicleBrandId], references: [id])
+  // vehicleBrandId       Int?
+  // VehicleType          VehicleType?        @relation(fields: [vehicleTypeId], references: [id])
+  // vehicleTypeId        Int?
+  // VehicleWheelerType   VehicleWheelerType? @relation(fields: [vehicleWheelerTypeId], references: [id])
+  // vehicleWheelerTypeId Int?
 }
 
 model VehicleBrand {
   id   Int    @id @default(autoincrement())
   name String
 
-  VehicleWheelerType   VehicleWheelerType? @relation(fields: [vehicleWheelerTypeId], references: [id])
+  vehicleWheelerType   VehicleWheelerType? @relation(fields: [vehicleWheelerTypeId], references: [id])
   vehicleWheelerTypeId Int?
-  Vehicle              Vehicle[]
+  vehicle              OwnedVehicle[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -209,9 +229,9 @@ model VehicleType {
   id   Int    @id @default(autoincrement())
   name String
 
-  VehicleWheelerType   VehicleWheelerType? @relation(fields: [vehicleWheelerTypeId], references: [id])
+  vehicleWheelerType   VehicleWheelerType? @relation(fields: [vehicleWheelerTypeId], references: [id])
   vehicleWheelerTypeId Int?
-  Vehicle              Vehicle[]
+  vehicle              OwnedVehicle[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -223,7 +243,7 @@ model VehicleWheelerType {
   name    String
   types   VehicleType[]
   brands  VehicleBrand[]
-  Vehicle Vehicle[]
+  vehicle OwnedVehicle[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -243,7 +263,7 @@ model Service {
   customer   Customer @relation(fields: [customerId], references: [id])
   customerId Int
 
-  vehicle   Vehicle @relation(fields: [vehicleId], references: [id])
+  vehicle   OwnedVehicle @relation(fields: [vehicleId], references: [id])
   vehicleId Int
 
   transaction Transaction?

@@ -115,7 +115,7 @@ Table Customer {
   email String
   address String
   transaction Transaction [not null]
-  Vehicle Vehicle [not null]
+  vehicle OwnedVehicle [not null]
   Service Service [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
@@ -136,23 +136,33 @@ Table Vehicle {
   id Int [pk, increment]
   name String [not null]
   fuel String
-  kilometerRun String
   engine String
   mileage String
-  makeYear String
   transmission String
-  color String
   features String
+  ownedVehicle OwnedVehicle [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [default: `now()`, not null]
+}
+
+Table OwnedVehicle {
+  id Int [pk, increment]
+  kilometerRun String
+  makeYear String
+  color String
   price String
-  wheelerType VehicleWheelerType [not null]
-  type VehicleType [not null]
-  brand VehicleBrand [not null]
-  vehicleWheelerTypeId Int [not null]
-  vehicleTypeId Int [not null]
-  vehicleBrandId Int [not null]
+  plate String
   customer Customer
   customerId Int
   Service Service [not null]
+  vehicleWheelerTypeId Int [not null]
+  vehicleTypeId Int [not null]
+  vehicleBrandId Int [not null]
+  vehicleId Int [not null]
+  wheelerType VehicleWheelerType [not null]
+  type VehicleType [not null]
+  brand VehicleBrand [not null]
+  vehicle Vehicle [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
 }
@@ -160,9 +170,9 @@ Table Vehicle {
 Table VehicleBrand {
   id Int [pk, increment]
   name String [not null]
-  VehicleWheelerType VehicleWheelerType
+  vehicleWheelerType VehicleWheelerType
   vehicleWheelerTypeId Int
-  Vehicle Vehicle [not null]
+  vehicle OwnedVehicle [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
 }
@@ -170,9 +180,9 @@ Table VehicleBrand {
 Table VehicleType {
   id Int [pk, increment]
   name String [not null]
-  VehicleWheelerType VehicleWheelerType
+  vehicleWheelerType VehicleWheelerType
   vehicleWheelerTypeId Int
-  Vehicle Vehicle [not null]
+  vehicle OwnedVehicle [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
 }
@@ -182,7 +192,7 @@ Table VehicleWheelerType {
   name String [not null]
   types VehicleType [not null]
   brands VehicleBrand [not null]
-  Vehicle Vehicle [not null]
+  vehicle OwnedVehicle [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
 }
@@ -191,7 +201,7 @@ Table Service {
   id Int [pk, increment]
   customer Customer [not null]
   customerId Int [not null]
-  vehicle Vehicle [not null]
+  vehicle OwnedVehicle [not null]
   vehicleId Int [not null]
   transaction Transaction
   staff Staff
@@ -238,13 +248,15 @@ Ref: Transaction.serviceId - Service.id
 
 Ref: Transaction.customerId > Customer.id
 
-Ref: Vehicle.vehicleWheelerTypeId > VehicleWheelerType.id
+Ref: OwnedVehicle.customerId > Customer.id
 
-Ref: Vehicle.vehicleTypeId > VehicleType.id
+Ref: OwnedVehicle.vehicleWheelerTypeId > VehicleWheelerType.id
 
-Ref: Vehicle.vehicleBrandId > VehicleBrand.id
+Ref: OwnedVehicle.vehicleTypeId > VehicleType.id
 
-Ref: Vehicle.customerId > Customer.id
+Ref: OwnedVehicle.vehicleBrandId > VehicleBrand.id
+
+Ref: OwnedVehicle.vehicleId > Vehicle.id
 
 Ref: VehicleBrand.vehicleWheelerTypeId > VehicleWheelerType.id
 
@@ -252,6 +264,6 @@ Ref: VehicleType.vehicleWheelerTypeId > VehicleWheelerType.id
 
 Ref: Service.customerId > Customer.id
 
-Ref: Service.vehicleId > Vehicle.id
+Ref: Service.vehicleId > OwnedVehicle.id
 
 Ref: Service.staffId > Staff.id
