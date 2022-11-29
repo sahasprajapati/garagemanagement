@@ -12,6 +12,9 @@ export class Attendance {
   status: AttendaceStatus = AttendaceStatus.ABSENT;
 
   @ApiProperty({ type: Date })
+  date: Date = undefined;
+
+  @ApiProperty({ type: Date })
   createdAt: Date = undefined;
 
   @ApiProperty({ type: Date })

@@ -8,4 +8,11 @@ export enum PermissionSubject {
   'StaffDesignation' = 'staffdesignation', 
   'Attendance' = 'attendance', 
   'Leave' = 'leave', 
+  'Customer' = 'customer', 
+  'Transaction' = 'transaction', 
+  'Vehicle' = 'vehicle', 
+  'VehicleBrand' = 'vehiclebrand', 
+  'VehicleType' = 'vehicletype', 
+  'VehicleWheelerType' = 'vehiclewheelertype', 
+  'Service' = 'service', 
 }

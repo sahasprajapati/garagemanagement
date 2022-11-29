@@ -28,7 +28,7 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapterHost));
 
   setupSwagger(app);
-  await app.listen(3001);
+  await app.listen(3003);
 }
 bootstrap();
 // }

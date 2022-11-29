@@ -1,6 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-export class Staff {
+export class Customer {
   @ApiProperty({ type: Number })
   id: number = undefined;
 
@@ -10,8 +10,11 @@ export class Staff {
   @ApiProperty({ type: String })
   mobile: string = undefined;
 
-  @ApiProperty({ type: Number })
-  staffDesignationId: number = undefined;
+  @ApiPropertyOptional({ type: String })
+  email?: string = undefined;
+
+  @ApiPropertyOptional({ type: String })
+  address?: string = undefined;
 
   @ApiProperty({ type: Date })
   createdAt: Date = undefined;

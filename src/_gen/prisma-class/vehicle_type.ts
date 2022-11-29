@@ -1,17 +1,14 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-export class Staff {
+export class VehicleType {
   @ApiProperty({ type: Number })
   id: number = undefined;
 
   @ApiProperty({ type: String })
   name: string = undefined;
 
-  @ApiProperty({ type: String })
-  mobile: string = undefined;
-
-  @ApiProperty({ type: Number })
-  staffDesignationId: number = undefined;
+  @ApiPropertyOptional({ type: Number })
+  vehicleWheelerTypeId?: number = undefined;
 
   @ApiProperty({ type: Date })
   createdAt: Date = undefined;

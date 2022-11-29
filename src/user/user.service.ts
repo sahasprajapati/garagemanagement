@@ -23,6 +23,13 @@ export class UsersService {
       },
       throwExistError: true,
     });
+    await verifyEntity({
+      model: this.prisma.role,
+      name: 'Role ',
+      findCondition: {
+        id: createUserDto.roleId,
+      },
+    });
     return this.prisma.user.create({
       data: {
         name: createUserDto.name,
@@ -148,5 +155,20 @@ export class UsersService {
       id,
     });
     return this.prisma.user.delete({ where: { id } });
+  }
+
+  async removeMulti(ids: number[]) {
+    // await verifyEntity({
+    //   model: this.prisma.role,
+    //   name: 'Role',
+    //   id,
+    // });
+    return this.prisma.user.deleteMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    });
   }
 }
