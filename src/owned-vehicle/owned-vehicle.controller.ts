@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { OwnedVehicleService } from './owned-vehicle.service';
 import { CreateOwnedVehicleDto } from './dto/create-owned-vehicle.dto';
@@ -20,6 +21,7 @@ import { PermissionSubject } from '@common/enums/permission-subject.enum';
 import { ResponseDto } from '@common/dtos/response.dto';
 import { generateRepsonseMessage } from '@src/roles/response';
 import { ResponseMessage } from '@common/enums/response.enum';
+import { PageOptionsDto } from './../common/dtos/pagination/page-options.dto';
 
 @Controller('owned-vehicle')
 @ApiBearerAuth()
@@ -46,25 +48,50 @@ export class OwnedVehicleController {
   }
 
   @Get()
-  findAll() {
-    return this.ownedVehicleService.findAll();
+  async findAll(@Query() pageOptionsDto: PageOptionsDto) {
+    return this.ownedVehicleService.findAll(pageOptionsDto);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.ownedVehicleService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return new ResponseDto(
+      generateRepsonseMessage({
+        model: 'Owned Vehicle',
+        message: ResponseMessage.Read,
+      }),
+      await this.ownedVehicleService.findOne(+id),
+    );
   }
 
   @Patch(':id')
-  update(
+  @ApiCustomResponse(OwnedVehicle, true)
+  @CheckPolicies(
+    new CustomPolicyHandler(
+      PermissionAction.Update,
+      PermissionSubject.OwnedVehicle,
+    ),
+  )
+  async update(
     @Param('id') id: string,
     @Body() updateOwnedVehicleDto: UpdateOwnedVehicleDto,
   ) {
-    return this.ownedVehicleService.update(+id, updateOwnedVehicleDto);
+    return new ResponseDto(
+      generateRepsonseMessage({
+        model: 'Owned Vehicle',
+        message: ResponseMessage.Update,
+      }),
+      await this.ownedVehicleService.update(+id, updateOwnedVehicleDto),
+    );
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.ownedVehicleService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return new ResponseDto(
+      generateRepsonseMessage({
+        model: 'Owned Vehicle',
+        message: ResponseMessage.Delete,
+      }),
+      await this.ownedVehicleService.remove(+id),
+    );
   }
 }
