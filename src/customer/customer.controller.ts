@@ -9,6 +9,7 @@ import {
   Param,
   Delete,
   Query,
+  Put,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CustomerService } from './customer.service';
@@ -99,6 +100,24 @@ export class CustomerController {
         message: ResponseMessage.Delete,
       }),
       await this.customerService.remove(+id),
+    );
+  }
+
+  @Put('/delete')
+  @ApiCustomResponse(Customer, true)
+  @CheckPolicies(
+    new CustomPolicyHandler(
+      PermissionAction.Delete,
+      PermissionSubject.Customer,
+    ),
+  )
+  async removeMulti(@Body('ids') ids: number[]) {
+    return new ResponseDto(
+      generateRepsonseMessage({
+        model: 'Customer',
+        message: ResponseMessage.Delete,
+      }),
+      await this.customerService.removeMulti(ids),
     );
   }
 }

@@ -16,11 +16,11 @@ export class OwnedVehicle {
   @ApiPropertyOptional({ type: String })
   price?: string = undefined;
 
-  @ApiPropertyOptional({ type: String })
-  plate?: string = undefined;
+  @ApiProperty({ type: String })
+  numberPlate: string = undefined;
 
-  @ApiPropertyOptional({ type: Number })
-  customerId?: number = undefined;
+  @ApiProperty({ type: Number })
+  customerId: number = undefined;
 
   @ApiProperty({ type: Number })
   vehicleWheelerTypeId: number = undefined;

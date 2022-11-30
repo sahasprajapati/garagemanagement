@@ -151,9 +151,9 @@ Table OwnedVehicle {
   makeYear String
   color String
   price String
-  plate String
-  customer Customer
-  customerId Int
+  numberPlate String [not null]
+  customer Customer [not null]
+  customerId Int [not null]
   Service Service [not null]
   vehicleWheelerTypeId Int [not null]
   vehicleTypeId Int [not null]

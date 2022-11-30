@@ -11,6 +11,7 @@ export enum PermissionSubject {
   'Customer' = 'customer', 
   'Transaction' = 'transaction', 
   'Vehicle' = 'vehicle', 
+  'OwnedVehicle' = 'ownedvehicle', 
   'VehicleBrand' = 'vehiclebrand', 
   'VehicleType' = 'vehicletype', 
   'VehicleWheelerType' = 'vehiclewheelertype', 

@@ -4,11 +4,11 @@ import { VehicleWheelerType } from './vehicle_wheeler_type';
 import { VehicleType } from './vehicle_type';
 import { VehicleBrand } from './vehicle_brand';
 import { Vehicle } from './vehicle';
-import { ApiPropertyOptional, ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class OwnedVehicleRelations {
-  @ApiPropertyOptional({ type: () => Customer })
-  customer?: Customer = undefined;
+  @ApiProperty({ type: () => Customer })
+  customer: Customer = undefined;
 
   @ApiProperty({ isArray: true, type: () => Service })
   Service: Service[] = undefined;

@@ -187,10 +187,10 @@ model OwnedVehicle {
   makeYear     String?
   color        String?
   price        String?
-  plate        String?
+  numberPlate        String
 
-  customer   Customer? @relation(fields: [customerId], references: [id])
-  customerId Int?
+  customer   Customer @relation(fields: [customerId], references: [id])
+  customerId Int
   Service    Service[]
 
   vehicleWheelerTypeId Int
