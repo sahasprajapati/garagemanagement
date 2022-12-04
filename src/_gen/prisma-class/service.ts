@@ -1,5 +1,5 @@
-import { ServiceOffered } from '....\node_modules.pnpm@prisma+client@4.6.1_prisma@4.6.1\node_modules@prismaclient';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ServiceOffered } from '@prisma/client';
 
 export class Service {
   @ApiProperty({ type: Number })

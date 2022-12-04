@@ -33,13 +33,13 @@ export class ServiceController {
     new CustomPolicyHandler(PermissionAction.Create, PermissionSubject.Service),
   )
   async create(@Body() createServiceDto: CreateServiceDto) {
-    return new ResponseDto(
-      generateRepsonseMessage({
-        model: 'Service',
-        message: ResponseMessage.Create,
-      }),
-      await this.serviceService.create(createServiceDto),
-    );
+    // return new ResponseDto(
+    //   generateRepsonseMessage({
+    //     model: 'Service',
+    //     message: ResponseMessage.Create,
+    //   }),
+    return await this.serviceService.create(createServiceDto);
+    // );
   }
 
   @Get()

@@ -17,4 +17,7 @@ export class CreateServiceDto {
 
   @ApiProperty()
   staffId: number;
+
+  @ApiProperty()
+  queueNumber: number;
 }

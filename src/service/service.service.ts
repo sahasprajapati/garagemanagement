@@ -9,15 +9,38 @@ export class ServiceService {
   constructor(private prisma: PrismaService) {}
 
   async create(createServiceDto: CreateServiceDto) {
-    return await this.prisma.service.create({ data: createServiceDto });
+    const queueNumber = createServiceDto.queueNumber;
+    delete createServiceDto.queueNumber;
+    const service = await this.prisma.service.create({
+      data: createServiceDto,
+    });
+    // console.log(service);
+    return {
+      data: {
+        serviceToken: `${new Date().toLocaleString()}-${service.customerId}-${
+          service.vehicleId
+        }-queueNumber=${queueNumber}`,
+      },
+      message: 'Service Created!',
+    };
+    // return { data: service, message: 'Service Created' };
   }
 
   findAll() {
     return `This action returns all service`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} service`;
+  async findOne(id: number) {
+    await verifyEntity({
+      model: this.prisma.service,
+      name: 'Staff',
+      id,
+    });
+    return this.prisma.service.findFirst({
+      where: {
+        id: id,
+      },
+    });
   }
 
   async update(id: number, updateServiceDto: any) {

@@ -27,6 +27,7 @@ import { VehicleTypeModule } from './vehicle-type/vehicle-type.module';
     VehicleModule,
     VehicleBrandModule,
     VehicleTypeModule,
+    ServiceModule,
   ],
   controllers: [AppController],
   providers: [

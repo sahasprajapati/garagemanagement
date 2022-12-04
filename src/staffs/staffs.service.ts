@@ -338,7 +338,7 @@ export class StaffsService {
     const staffAttendances = staffsAttendance.map(async (staff) => {
       await this.prisma.attendance.upsert({
         where: {
-          attendanceIdentifier: {
+          staffId_date: {
             staffId: staff.id,
             date: date,
           },
