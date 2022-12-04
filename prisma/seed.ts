@@ -1,5 +1,3 @@
-// prisma/seed.ts
-
 import { PrismaClient } from '@prisma/client';
 import { modelNameGenerator } from './generator';
 import { PermissionSubject } from '../src/common/enums/permission-subject.enum';

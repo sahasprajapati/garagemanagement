@@ -40,15 +40,15 @@ export class OwnedVehicleService {
         vehicle: {
           select: { name: true },
         },
-        brand: {
-          select: { name: true },
-        },
-        type: {
-          select: { name: true },
-        },
-        wheelerType: {
-          select: { name: true },
-        },
+        // brand: {
+        //   select: { name: true },
+        // },
+        // type: {
+        //   select: { name: true },
+        // },
+        // wheelerType: {
+        //   select: { name: true },
+        // },
         customer: {
           select: { name: true },
         },

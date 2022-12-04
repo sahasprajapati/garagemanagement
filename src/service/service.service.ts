@@ -20,7 +20,7 @@ export class ServiceService {
     return `This action returns a #${id} service`;
   }
 
-  async update(id: number, updateServiceDto: UpdateServiceDto) {
+  async update(id: number, updateServiceDto: any) {
     await verifyEntity({
       model: this.prisma.service,
       name: 'Service',
