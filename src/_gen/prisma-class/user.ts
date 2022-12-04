@@ -11,10 +11,10 @@ export class User {
   roleId?: number = undefined;
 
   @ApiProperty({ type: String })
-  password: string = undefined;
+  name: string = undefined;
 
   @ApiProperty({ type: String })
-  name: string = undefined;
+  password: string = undefined;
 
   @ApiProperty({ type: Date })
   createdAt: Date = undefined;

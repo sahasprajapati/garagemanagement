@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch"]
@@ -8,8 +5,8 @@ generator client {
 
 generator prismaClassGenerator {
   provider               = "prisma-class-generator"
-  separateRelationFields = true
-  dryRun                 = false
+  dryRun                 = "false"
+  separateRelationFields = "true"
 }
 
 generator dbml {
@@ -24,110 +21,204 @@ datasource db {
 model Permission {
   id              Int              @id @default(autoincrement())
   action          String
+  condition       Json?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @default(now()) @updatedAt
+  subjectId       Int?
+  subject         Subject?         @relation(fields: [subjectId], references: [id])
   rolePermissions RolePermission[]
 
-  condition Json?
-
-  subject   Subject? @relation(fields: [subjectId], references: [id])
-  subjectId Int?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
-  @@unique([action, subjectId], name: "permissionIdentifier")
+  @@unique([action, subjectId])
 }
 
 model Subject {
   id          Int          @id @default(autoincrement())
   name        String       @unique
-  permissions Permission[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @default(now()) @updatedAt
+  permissions Permission[]
 }
 
 model RolePermission {
-  id Int @id @default(autoincrement())
-
-  role         Role?       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  id           Int         @id @default(autoincrement())
   roleId       Int?
-  permission   Permission? @relation(fields: [permissionId], references: [id], onDelete: Cascade)
   permissionId Int?
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @default(now()) @updatedAt
+  permission   Permission? @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  role         Role?       @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
-  @@unique([roleId, permissionId], name: "rolePermissionIdentifier")
+  @@unique([roleId, permissionId])
 }
 
 model Role {
   id              Int              @id @default(autoincrement())
   name            String           @unique
-  user            User[]
-  rolePermissions RolePermission[]
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @default(now()) @updatedAt
+  rolePermissions RolePermission[]
+  user            User[]
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  role     Role?  @relation(fields: [roleId], references: [id])
-  roleId   Int?
-  password String
-  name     String
-
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  roleId    Int?
+  name      String
+  password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+  role      Role?    @relation(fields: [roleId], references: [id])
 }
 
 model Staff {
   id                 Int              @id @default(autoincrement())
   name               String
   mobile             String           @unique
-  designation        StaffDesignation @relation(fields: [staffDesignationId], references: [id])
   staffDesignationId Int
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @default(now()) @updatedAt
+  designation        StaffDesignation @relation(fields: [staffDesignationId], references: [id])
   attendance         Attendance[]
   leave              Leave[]
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now()) @updatedAt
-  Service   Service[]
+  Service            Service[]
 }
 
 model StaffDesignation {
-  id          Int     @id @default(autoincrement())
-  name        String  @unique
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
   description String?
+  totalLeave  Int      @default(15)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
   staff       Staff[]
-  totalLeave  Int     @default(15)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model Attendance {
-  id      Int             @id @default(autoincrement())
-  staff   Staff           @relation(fields: [staffId], references: [id])
-  staffId Int
-  status  AttendaceStatus @default(ABSENT)
-  date    DateTime
+  id        Int             @id @default(autoincrement())
+  staffId   Int
+  status    AttendaceStatus @default(ABSENT)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @default(now()) @updatedAt
+  date      DateTime
+  staff     Staff           @relation(fields: [staffId], references: [id])
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-
-  @@unique([staffId, date], name: "attendanceIdentifier")
+  @@unique([staffId, date])
 }
 
 model Leave {
   id          Int      @id @default(autoincrement())
+  staffId     Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
   days        Int      @default(0)
   description String
-  staff       Staff    @relation(fields: [staffId], references: [id])
-  staffId     Int
   from        DateTime
   to          DateTime
+  staff       Staff    @relation(fields: [staffId], references: [id])
+}
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+model Customer {
+  id          Int            @id @default(autoincrement())
+  name        String
+  mobile      String         @unique
+  email       String?
+  address     String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @default(now()) @updatedAt
+  vehicle     OwnedVehicle[]
+  Service     Service[]
+  transaction Transaction[]
+}
+
+model Transaction {
+  id         Int           @id @default(autoincrement())
+  medium     PaymentMedium @default(CASH)
+  serviceId  Int           @unique
+  customerId Int?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @default(now()) @updatedAt
+  Customer   Customer?     @relation(fields: [customerId], references: [id])
+  Service    Service       @relation(fields: [serviceId], references: [id])
+}
+
+model Vehicle {
+  id           Int            @id @default(autoincrement())
+  name         String
+  fuel         String?
+  engine       String?
+  mileage      String?
+  transmission String?
+  features     String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @default(now()) @updatedAt
+  ownedVehicle OwnedVehicle[]
+}
+
+model OwnedVehicle {
+  id                   Int                @id @default(autoincrement())
+  kilometerRun         String?
+  makeYear             String?
+  color                String?
+  price                String?
+  customerId           Int
+  vehicleWheelerTypeId Int
+  vehicleTypeId        Int
+  vehicleBrandId       Int
+  vehicleId            Int
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @default(now()) @updatedAt
+  numberPlate          String
+  customer             Customer           @relation(fields: [customerId], references: [id])
+  brand                VehicleBrand       @relation(fields: [vehicleBrandId], references: [id])
+  vehicle              Vehicle            @relation(fields: [vehicleId], references: [id])
+  type                 VehicleType        @relation(fields: [vehicleTypeId], references: [id])
+  wheelerType          VehicleWheelerType @relation(fields: [vehicleWheelerTypeId], references: [id])
+  Service              Service[]
+}
+
+model VehicleBrand {
+  id                   Int                 @id @default(autoincrement())
+  name                 String
+  vehicleWheelerTypeId Int?
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @default(now()) @updatedAt
+  vehicleWheelerType   VehicleWheelerType? @relation(fields: [vehicleWheelerTypeId], references: [id])
+  vehicle              OwnedVehicle[]
+}
+
+model VehicleType {
+  id                   Int                 @id @default(autoincrement())
+  name                 String
+  vehicleWheelerTypeId Int?
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @default(now()) @updatedAt
+  vehicleWheelerType   VehicleWheelerType? @relation(fields: [vehicleWheelerTypeId], references: [id])
+  vehicle              OwnedVehicle[]
+}
+
+model VehicleWheelerType {
+  id        Int            @id @default(autoincrement())
+  name      String
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @default(now()) @updatedAt
+  vehicle   OwnedVehicle[]
+  brands    VehicleBrand[]
+  types     VehicleType[]
+}
+
+model Service {
+  id          Int            @id @default(autoincrement())
+  customerId  Int
+  vehicleId   Int
+  staffId     Int?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @default(now()) @updatedAt
+  serviceName ServiceOffered
+  customer    Customer       @relation(fields: [customerId], references: [id])
+  staff       Staff?         @relation(fields: [staffId], references: [id])
+  vehicle     OwnedVehicle   @relation(fields: [vehicleId], references: [id])
+  transaction Transaction?
 }
 
 enum AttendaceStatus {
@@ -136,143 +227,12 @@ enum AttendaceStatus {
   LEAVE
 }
 
-model Customer {
-  id Int @id @default(autoincrement())
-
-  name    String
-  mobile  String  @unique
-  email   String?
-  address String?
-
-  transaction Transaction[]
-  vehicle     OwnedVehicle[]
-  Service     Service[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-}
-
-model Transaction {
-  id     Int           @id @default(autoincrement())
-  medium PaymentMedium @default(CASH)
-
-  Service    Service   @relation(fields: [serviceId], references: [id])
-  serviceId  Int       @unique
-  Customer   Customer? @relation(fields: [customerId], references: [id])
-  customerId Int?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-}
-
-model Vehicle {
-  id           Int     @id @default(autoincrement())
-  name         String
-  fuel         String?
-  engine       String?
-  mileage      String?
-  transmission String?
-  features     String?
-
-  ownedVehicle OwnedVehicle[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-}
-
-model OwnedVehicle {
-  id Int @id @default(autoincrement())
-
-  kilometerRun String?
-  makeYear     String?
-  color        String?
-  price        String?
-  numberPlate        String
-
-  customer   Customer @relation(fields: [customerId], references: [id])
-  customerId Int
-  Service    Service[]
-
-  vehicleWheelerTypeId Int
-  vehicleTypeId        Int
-  vehicleBrandId       Int
-  vehicleId            Int
-
-  wheelerType VehicleWheelerType @relation(fields: [vehicleWheelerTypeId], references: [id])
-  type        VehicleType        @relation(fields: [vehicleTypeId], references: [id])
-  brand       VehicleBrand       @relation(fields: [vehicleBrandId], references: [id])
-  vehicle     Vehicle            @relation(fields: [vehicleId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-  // VehicleBrand         VehicleBrand?       @relation(fields: [vehicleBrandId], references: [id])
-  // vehicleBrandId       Int?
-  // VehicleType          VehicleType?        @relation(fields: [vehicleTypeId], references: [id])
-  // vehicleTypeId        Int?
-  // VehicleWheelerType   VehicleWheelerType? @relation(fields: [vehicleWheelerTypeId], references: [id])
-  // vehicleWheelerTypeId Int?
-}
-
-model VehicleBrand {
-  id   Int    @id @default(autoincrement())
-  name String
-
-  vehicleWheelerType   VehicleWheelerType? @relation(fields: [vehicleWheelerTypeId], references: [id])
-  vehicleWheelerTypeId Int?
-  vehicle              OwnedVehicle[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-}
-
-model VehicleType {
-  id   Int    @id @default(autoincrement())
-  name String
-
-  vehicleWheelerType   VehicleWheelerType? @relation(fields: [vehicleWheelerTypeId], references: [id])
-  vehicleWheelerTypeId Int?
-  vehicle              OwnedVehicle[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-}
-
-// Car/Bike
-model VehicleWheelerType {
-  id      Int            @id @default(autoincrement())
-  name    String
-  types   VehicleType[]
-  brands  VehicleBrand[]
-  vehicle OwnedVehicle[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-}
-
 enum PaymentMedium {
   CASH
   CREDIT
   ESEWA
   KHALTI
   FONEPAY
-}
-
-model Service {
-  id Int @id @default(autoincrement())
-
-  customer   Customer @relation(fields: [customerId], references: [id])
-  customerId Int
-
-  vehicle   OwnedVehicle @relation(fields: [vehicleId], references: [id])
-  vehicleId Int
-
-  transaction Transaction?
-
-  staff   Staff? @relation(fields: [staffId], references: [id])
-  staffId Int?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
 }
 
 enum ServiceOffered {

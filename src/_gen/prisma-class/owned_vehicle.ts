@@ -16,9 +16,6 @@ export class OwnedVehicle {
   @ApiPropertyOptional({ type: String })
   price?: string = undefined;
 
-  @ApiProperty({ type: String })
-  numberPlate: string = undefined;
-
   @ApiProperty({ type: Number })
   customerId: number = undefined;
 
@@ -39,4 +36,7 @@ export class OwnedVehicle {
 
   @ApiProperty({ type: Date })
   updatedAt: Date = undefined;
+
+  @ApiProperty({ type: String })
+  numberPlate: string = undefined;
 }

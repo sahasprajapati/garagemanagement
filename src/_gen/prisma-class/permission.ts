@@ -10,12 +10,12 @@ export class Permission {
   @ApiPropertyOptional({ type: Object })
   condition?: object = undefined;
 
-  @ApiPropertyOptional({ type: Number })
-  subjectId?: number = undefined;
-
   @ApiProperty({ type: Date })
   createdAt: Date = undefined;
 
   @ApiProperty({ type: Date })
   updatedAt: Date = undefined;
+
+  @ApiPropertyOptional({ type: Number })
+  subjectId?: number = undefined;
 }

@@ -10,9 +10,10 @@ import { StaffsModule } from './staffs/staffs.module';
 import { UsersModule } from './user/user.module';
 import { CustomerModule } from './customer/customer.module';
 import { OwnedVehicleModule } from './owned-vehicle/owned-vehicle.module';
+import { ServiceModule } from './service/service.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, UsersModule, StaffsModule, RolesModule, CustomerModule,OwnedVehicleModule ],
+  imports: [PrismaModule, AuthModule, UsersModule, StaffsModule, RolesModule, CustomerModule,OwnedVehicleModule, ServiceModule ],
   controllers: [AppController],
   providers: [
     AppService,

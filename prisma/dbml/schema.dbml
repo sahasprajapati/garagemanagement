@@ -5,12 +5,12 @@
 Table Permission {
   id Int [pk, increment]
   action String [not null]
-  rolePermissions RolePermission [not null]
   condition Json
-  subject Subject
-  subjectId Int
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
+  subjectId Int
+  subject Subject
+  rolePermissions RolePermission [not null]
 
   indexes {
     (action, subjectId) [unique]
@@ -20,19 +20,19 @@ Table Permission {
 Table Subject {
   id Int [pk, increment]
   name String [unique, not null]
-  permissions Permission [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
+  permissions Permission [not null]
 }
 
 Table RolePermission {
   id Int [pk, increment]
-  role Role
   roleId Int
-  permission Permission
   permissionId Int
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
+  permission Permission
+  role Role
 
   indexes {
     (roleId, permissionId) [unique]
@@ -42,33 +42,33 @@ Table RolePermission {
 Table Role {
   id Int [pk, increment]
   name String [unique, not null]
-  user User [not null]
-  rolePermissions RolePermission [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
+  rolePermissions RolePermission [not null]
+  user User [not null]
 }
 
 Table User {
   id Int [pk, increment]
   email String [unique, not null]
-  role Role
   roleId Int
-  password String [not null]
   name String [not null]
+  password String [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
+  role Role
 }
 
 Table Staff {
   id Int [pk, increment]
   name String [not null]
   mobile String [unique, not null]
-  designation StaffDesignation [not null]
   staffDesignationId Int [not null]
-  attendance Attendance [not null]
-  leave Leave [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
+  designation StaffDesignation [not null]
+  attendance Attendance [not null]
+  leave Leave [not null]
   Service Service [not null]
 }
 
@@ -76,20 +76,20 @@ Table StaffDesignation {
   id Int [pk, increment]
   name String [unique, not null]
   description String
-  staff Staff [not null]
   totalLeave Int [not null, default: 15]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
+  staff Staff [not null]
 }
 
 Table Attendance {
   id Int [pk, increment]
-  staff Staff [not null]
   staffId Int [not null]
   status AttendaceStatus [not null, default: 'ABSENT']
-  date DateTime [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
+  date DateTime [not null]
+  staff Staff [not null]
 
   indexes {
     (staffId, date) [unique]
@@ -98,14 +98,14 @@ Table Attendance {
 
 Table Leave {
   id Int [pk, increment]
-  days Int [not null, default: 0]
-  description String [not null]
-  staff Staff [not null]
   staffId Int [not null]
-  from DateTime [not null]
-  to DateTime [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
+  days Int [not null, default: 0]
+  description String [not null]
+  from DateTime [not null]
+  to DateTime [not null]
+  staff Staff [not null]
 }
 
 Table Customer {
@@ -114,22 +114,22 @@ Table Customer {
   mobile String [unique, not null]
   email String
   address String
-  transaction Transaction [not null]
-  vehicle OwnedVehicle [not null]
-  Service Service [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
+  vehicle OwnedVehicle [not null]
+  Service Service [not null]
+  transaction Transaction [not null]
 }
 
 Table Transaction {
   id Int [pk, increment]
   medium PaymentMedium [not null, default: 'CASH']
-  Service Service [not null]
   serviceId Int [unique, not null]
-  Customer Customer
   customerId Int
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
+  Customer Customer
+  Service Service [not null]
 }
 
 Table Vehicle {
@@ -140,9 +140,9 @@ Table Vehicle {
   mileage String
   transmission String
   features String
-  ownedVehicle OwnedVehicle [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
+  ownedVehicle OwnedVehicle [not null]
 }
 
 Table OwnedVehicle {
@@ -151,63 +151,64 @@ Table OwnedVehicle {
   makeYear String
   color String
   price String
-  numberPlate String [not null]
-  customer Customer [not null]
   customerId Int [not null]
-  Service Service [not null]
   vehicleWheelerTypeId Int [not null]
   vehicleTypeId Int [not null]
   vehicleBrandId Int [not null]
   vehicleId Int [not null]
-  wheelerType VehicleWheelerType [not null]
-  type VehicleType [not null]
-  brand VehicleBrand [not null]
-  vehicle Vehicle [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
+  numberPlate String [not null]
+  customer Customer [not null]
+  brand VehicleBrand [not null]
+  vehicle Vehicle [not null]
+  type VehicleType [not null]
+  wheelerType VehicleWheelerType [not null]
+  Service Service [not null]
 }
 
 Table VehicleBrand {
   id Int [pk, increment]
   name String [not null]
-  vehicleWheelerType VehicleWheelerType
   vehicleWheelerTypeId Int
-  vehicle OwnedVehicle [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
+  vehicleWheelerType VehicleWheelerType
+  vehicle OwnedVehicle [not null]
 }
 
 Table VehicleType {
   id Int [pk, increment]
   name String [not null]
-  vehicleWheelerType VehicleWheelerType
   vehicleWheelerTypeId Int
-  vehicle OwnedVehicle [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
+  vehicleWheelerType VehicleWheelerType
+  vehicle OwnedVehicle [not null]
 }
 
 Table VehicleWheelerType {
   id Int [pk, increment]
   name String [not null]
-  types VehicleType [not null]
-  brands VehicleBrand [not null]
-  vehicle OwnedVehicle [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
+  vehicle OwnedVehicle [not null]
+  brands VehicleBrand [not null]
+  types VehicleType [not null]
 }
 
 Table Service {
   id Int [pk, increment]
-  customer Customer [not null]
   customerId Int [not null]
-  vehicle OwnedVehicle [not null]
   vehicleId Int [not null]
-  transaction Transaction
-  staff Staff
   staffId Int
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
+  serviceName ServiceOffered [not null]
+  customer Customer [not null]
+  staff Staff
+  vehicle OwnedVehicle [not null]
+  transaction Transaction
 }
 
 Enum AttendaceStatus {
@@ -232,9 +233,9 @@ Enum ServiceOffered {
 
 Ref: Permission.subjectId > Subject.id
 
-Ref: RolePermission.roleId > Role.id [delete: Cascade]
-
 Ref: RolePermission.permissionId > Permission.id [delete: Cascade]
+
+Ref: RolePermission.roleId > Role.id [delete: Cascade]
 
 Ref: User.roleId > Role.id
 
@@ -244,19 +245,19 @@ Ref: Attendance.staffId > Staff.id
 
 Ref: Leave.staffId > Staff.id
 
-Ref: Transaction.serviceId - Service.id
-
 Ref: Transaction.customerId > Customer.id
 
+Ref: Transaction.serviceId - Service.id
+
 Ref: OwnedVehicle.customerId > Customer.id
-
-Ref: OwnedVehicle.vehicleWheelerTypeId > VehicleWheelerType.id
-
-Ref: OwnedVehicle.vehicleTypeId > VehicleType.id
 
 Ref: OwnedVehicle.vehicleBrandId > VehicleBrand.id
 
 Ref: OwnedVehicle.vehicleId > Vehicle.id
+
+Ref: OwnedVehicle.vehicleTypeId > VehicleType.id
+
+Ref: OwnedVehicle.vehicleWheelerTypeId > VehicleWheelerType.id
 
 Ref: VehicleBrand.vehicleWheelerTypeId > VehicleWheelerType.id
 
@@ -264,6 +265,6 @@ Ref: VehicleType.vehicleWheelerTypeId > VehicleWheelerType.id
 
 Ref: Service.customerId > Customer.id
 
-Ref: Service.vehicleId > OwnedVehicle.id
-
 Ref: Service.staffId > Staff.id
+
+Ref: Service.vehicleId > OwnedVehicle.id
