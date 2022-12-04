@@ -1,5 +1,5 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PaymentMedium } from '.pnpm/@prisma+client@4.6.1_prisma@4.6.1/node_modules/@prisma/client';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class Transaction {
   @ApiProperty({ type: Number })
