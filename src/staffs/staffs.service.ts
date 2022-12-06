@@ -1,21 +1,20 @@
-import { FindAllStaffWithSelect } from './dto/staff.dto';
-import { paginate } from '@src/common/utils/paginate';
+import { verifyEntity } from '@common/utils/verifyEntity';
+import { Staff } from '@gen/prisma-class/staff';
+import { StaffDesignation } from '@gen/prisma-class/staff_designation';
+import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { PrismaService } from './../prisma/prisma.service';
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateStaffDto } from './dto/create-staff.dto';
-import { UpdateAttendanceDto, UpdateStaffDto } from './dto/update-staff.dto';
-import { CreateLeaveDto } from './dto/create-leave.dto';
 import { PageOptionsDto } from '@src/common/dtos/pagination/page-options.dto';
 import { PageDto } from '@src/common/dtos/pagination/page.dto';
-import { FindAllUserWithSelect } from '@src/user/dto/user.dto';
 import { Order } from '@src/common/enums/order.enum';
-import { verifyEntity } from '@common/utils/verifyEntity';
+import { paginate } from '@src/common/utils/paginate';
+import { PrismaService } from './../prisma/prisma.service';
+import { CreateLeaveDto } from './dto/create-leave.dto';
 import { CreateStaffDesignationDto } from './dto/create-staff-designation.dto';
-import { StaffDesignation } from '@gen/prisma-class/staff_designation';
-import { UpdateStaffDesignationDto } from './dto/update-staff-designation.dto';
-import { Staff } from '@gen/prisma-class/staff';
+import { CreateStaffDto } from './dto/create-staff.dto';
+import { FindAllStaffWithSelect } from './dto/staff.dto';
 import { UpdateLeaveDto } from './dto/update-leave.dto';
+import { UpdateStaffDesignationDto } from './dto/update-staff-designation.dto';
+import { UpdateAttendanceDto, UpdateStaffDto } from './dto/update-staff.dto';
 
 enum AttendaceStatus {
   PRESENT = 'PRESENT',

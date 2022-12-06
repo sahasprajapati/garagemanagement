@@ -37,7 +37,7 @@ export class RolesService {
       async (permissionId) => {
         await this.prisma.rolePermission.upsert({
           where: {
-            rolePermissionIdentifier: {
+            roleId_permissionId:{
               roleId: role.id,
               permissionId: +permissionId,
             },
@@ -184,7 +184,7 @@ export class RolesService {
       async (permissionId) => {
         await this.prisma.rolePermission.upsert({
           where: {
-            rolePermissionIdentifier: {
+            roleId_permissionId: {
               roleId: role.id,
               permissionId: +permissionId,
             },

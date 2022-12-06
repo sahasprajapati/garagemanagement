@@ -1,5 +1,5 @@
-import { ServiceOffered } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
+import { ServiceOffered } from '@prisma/client';
 import { Transaction } from './../../_gen/prisma-class/transaction';
 
 export class CreateServiceDto {
@@ -13,7 +13,7 @@ export class CreateServiceDto {
   vehicleId: number;
 
   @ApiProperty({ required: false })
-  transaction: Transaction;
+  transactionId: number;
 
   @ApiProperty()
   staffId: number;

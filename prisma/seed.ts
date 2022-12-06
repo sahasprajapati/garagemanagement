@@ -40,7 +40,7 @@ async function main() {
         subjects.map(async (subject) => {
           const permission = await prisma.permission.upsert({
             where: {
-              permissionIdentifier: {
+              action_subjectId:{
                 subjectId: subject.id,
                 action: action,
               },
@@ -54,7 +54,7 @@ async function main() {
 
           const permission_role = await prisma.rolePermission.upsert({
             where: {
-              rolePermissionIdentifier: {
+              roleId_permissionId: {
                 roleId: role.id,
                 permissionId: permission.id,
               },

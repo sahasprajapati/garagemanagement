@@ -2,7 +2,6 @@ import { verifyEntity } from '@common/utils/verifyEntity';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@src/prisma/prisma.service';
 import { CreateServiceDto } from './dto/create-service.dto';
-import { UpdateServiceDto } from './dto/update-service.dto';
 
 @Injectable()
 export class ServiceService {
@@ -11,8 +10,35 @@ export class ServiceService {
   async create(createServiceDto: CreateServiceDto) {
     const queueNumber = createServiceDto.queueNumber;
     delete createServiceDto.queueNumber;
+    const {
+      serviceName,
+
+      customerId,
+
+      vehicleId,
+
+      transactionId,
+
+      staffId,
+
+      ...serviceData
+    } = createServiceDto;
     const service = await this.prisma.service.create({
-      data: createServiceDto,
+      data: {
+        serviceName: serviceName,
+        customer: {
+          connect: { id: customerId },
+        },
+        vehicle: {
+          connect: { id: vehicleId },
+        },
+        staff: {
+          connect: { id: staffId },
+        },
+        ...(transactionId
+          ? { transaction: { connect: { id: transactionId } } }
+          : {}),
+      },
     });
     // console.log(service);
     return {
