@@ -17,7 +17,7 @@ export class VehicleService {
       model: this.prisma.vehicle,
       name: 'Vehicle',
       findCondition: {
-        mobile: createVehicleDto.mobile,
+        name: createVehicleDto.name,
       },
       throwExistError: true,
     });

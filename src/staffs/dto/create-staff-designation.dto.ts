@@ -8,8 +8,12 @@ export class CreateStaffDesignationDto {
   @ApiProperty()
   description?: string;
 
-  @Transform((value) =>{ 
-    return parseInt(value.value, 10)}, { toClassOnly: true })
+  @Transform(
+    (value) => {
+      return parseInt(value.value, 10);
+    },
+    { toClassOnly: true },
+  )
   @ApiProperty({
     default: 15,
   })

@@ -8,23 +8,11 @@ const OwnedVehicleSelect = Prisma.validator<Prisma.OwnedVehicleSelect>()({
   color: true,
   price: true,
   customerId: true,
-  vehicleWheelerTypeId: true,
-  vehicleTypeId: true,
-  vehicleBrandId: true,
   vehicleId: true,
   createdAt: true,
   updatedAt: true,
   numberPlate: true,
   vehicle: {
-    select: { name: true },
-  },
-  brand: {
-    select: { name: true },
-  },
-  type: {
-    select: { name: true },
-  },
-  wheelerType: {
     select: { name: true },
   },
   customer: {
