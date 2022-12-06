@@ -140,9 +140,15 @@ Table Vehicle {
   mileage String
   transmission String
   features String
+  ownedVehicle OwnedVehicle [not null]
+  vehicleTypeId Int [not null]
+  vehicleWheelerTypeId Int [not null]
+  vehicleBrandId Int [not null]
+  brand VehicleBrand [not null]
+  type VehicleType [not null]
+  wheelerType VehicleWheelerType [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
-  ownedVehicle OwnedVehicle [not null]
 }
 
 Table OwnedVehicle {
@@ -151,20 +157,14 @@ Table OwnedVehicle {
   makeYear String
   color String
   price String
-  customerId Int [not null]
-  vehicleWheelerTypeId Int [not null]
-  vehicleTypeId Int [not null]
-  vehicleBrandId Int [not null]
-  vehicleId Int [not null]
-  createdAt DateTime [default: `now()`, not null]
-  updatedAt DateTime [default: `now()`, not null]
   numberPlate String [not null]
+  customerId Int [not null]
+  vehicleId Int [not null]
   customer Customer [not null]
-  brand VehicleBrand [not null]
   vehicle Vehicle [not null]
-  type VehicleType [not null]
-  wheelerType VehicleWheelerType [not null]
   Service Service [not null]
+  updatedAt DateTime [default: `now()`, not null]
+  createdAt DateTime [default: `now()`, not null]
 }
 
 Table VehicleBrand {
@@ -174,7 +174,7 @@ Table VehicleBrand {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
   vehicleWheelerType VehicleWheelerType
-  vehicle OwnedVehicle [not null]
+  Vehicle Vehicle [not null]
 }
 
 Table VehicleType {
@@ -184,7 +184,7 @@ Table VehicleType {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
   vehicleWheelerType VehicleWheelerType
-  vehicle OwnedVehicle [not null]
+  Vehicle Vehicle [not null]
 }
 
 Table VehicleWheelerType {
@@ -192,9 +192,9 @@ Table VehicleWheelerType {
   name String [not null]
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [default: `now()`, not null]
-  vehicle OwnedVehicle [not null]
   brands VehicleBrand [not null]
   types VehicleType [not null]
+  Vehicle Vehicle [not null]
 }
 
 Table Service {
@@ -249,15 +249,15 @@ Ref: Transaction.customerId > Customer.id
 
 Ref: Transaction.serviceId - Service.id
 
+Ref: Vehicle.vehicleBrandId > VehicleBrand.id
+
+Ref: Vehicle.vehicleTypeId > VehicleType.id
+
+Ref: Vehicle.vehicleWheelerTypeId > VehicleWheelerType.id
+
 Ref: OwnedVehicle.customerId > Customer.id
 
-Ref: OwnedVehicle.vehicleBrandId > VehicleBrand.id
-
 Ref: OwnedVehicle.vehicleId > Vehicle.id
-
-Ref: OwnedVehicle.vehicleTypeId > VehicleType.id
-
-Ref: OwnedVehicle.vehicleWheelerTypeId > VehicleWheelerType.id
 
 Ref: VehicleBrand.vehicleWheelerTypeId > VehicleWheelerType.id
 

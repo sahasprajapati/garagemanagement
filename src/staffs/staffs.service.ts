@@ -154,13 +154,27 @@ export class StaffsService {
       },
     });
   }
+  async removeMultiDesignation(ids: number[]) {
+    // await verifyEntity({
+    //   model: this.prisma.role,
+    //   name: 'Role',
+    //   id,
+    // });
+    return this.prisma.staffDesignation.deleteMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    });
+  }
   // Staff Designation
   async createDesignation(createStaffDto: CreateStaffDesignationDto) {
     await verifyEntity({
       model: this.prisma.staffDesignation,
       name: 'Staff Designation',
       findCondition: {
-        mobile: createStaffDto.name,
+        name: createStaffDto.name,
       },
       throwExistError: true,
     });
@@ -209,7 +223,7 @@ export class StaffsService {
     updatestaffDto: UpdateStaffDesignationDto,
   ) {
     await verifyEntity({
-      model: this.prisma.staff,
+      model: this.prisma.staffDesignation,
       name: 'Staff Designation',
       id,
     });

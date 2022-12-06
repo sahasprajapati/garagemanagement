@@ -143,38 +143,43 @@ model Transaction {
 }
 
 model Vehicle {
-  id           Int            @id @default(autoincrement())
+  id           Int     @id @default(autoincrement())
   name         String
   fuel         String?
   engine       String?
   mileage      String?
   transmission String?
   features     String?
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @default(now()) @updatedAt
+
   ownedVehicle OwnedVehicle[]
+
+  vehicleTypeId        Int
+  vehicleWheelerTypeId Int
+  vehicleBrandId       Int
+  brand                VehicleBrand       @relation(fields: [vehicleBrandId], references: [id])
+  type                 VehicleType        @relation(fields: [vehicleTypeId], references: [id])
+  wheelerType          VehicleWheelerType @relation(fields: [vehicleWheelerTypeId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model OwnedVehicle {
-  id                   Int                @id @default(autoincrement())
-  kilometerRun         String?
-  makeYear             String?
-  color                String?
-  price                String?
-  customerId           Int
-  vehicleWheelerTypeId Int
-  vehicleTypeId        Int
-  vehicleBrandId       Int
-  vehicleId            Int
-  createdAt            DateTime           @default(now())
-  updatedAt            DateTime           @default(now()) @updatedAt
-  numberPlate          String
-  customer             Customer           @relation(fields: [customerId], references: [id])
-  brand                VehicleBrand       @relation(fields: [vehicleBrandId], references: [id])
-  vehicle              Vehicle            @relation(fields: [vehicleId], references: [id])
-  type                 VehicleType        @relation(fields: [vehicleTypeId], references: [id])
-  wheelerType          VehicleWheelerType @relation(fields: [vehicleWheelerTypeId], references: [id])
-  Service              Service[]
+  id           Int     @id @default(autoincrement())
+  kilometerRun String?
+  makeYear     String?
+  color        String?
+  price        String?
+  numberPlate  String
+
+  customerId Int
+  vehicleId  Int
+  customer   Customer  @relation(fields: [customerId], references: [id])
+  vehicle    Vehicle   @relation(fields: [vehicleId], references: [id])
+  Service    Service[]
+
+  updatedAt DateTime @default(now()) @updatedAt
+  createdAt DateTime @default(now())
 }
 
 model VehicleBrand {
@@ -184,7 +189,7 @@ model VehicleBrand {
   createdAt            DateTime            @default(now())
   updatedAt            DateTime            @default(now()) @updatedAt
   vehicleWheelerType   VehicleWheelerType? @relation(fields: [vehicleWheelerTypeId], references: [id])
-  vehicle              OwnedVehicle[]
+  Vehicle              Vehicle[]
 }
 
 model VehicleType {
@@ -194,7 +199,7 @@ model VehicleType {
   createdAt            DateTime            @default(now())
   updatedAt            DateTime            @default(now()) @updatedAt
   vehicleWheelerType   VehicleWheelerType? @relation(fields: [vehicleWheelerTypeId], references: [id])
-  vehicle              OwnedVehicle[]
+  Vehicle              Vehicle[]
 }
 
 model VehicleWheelerType {
@@ -202,9 +207,9 @@ model VehicleWheelerType {
   name      String
   createdAt DateTime       @default(now())
   updatedAt DateTime       @default(now()) @updatedAt
-  vehicle   OwnedVehicle[]
   brands    VehicleBrand[]
   types     VehicleType[]
+  Vehicle   Vehicle[]
 }
 
 model Service {

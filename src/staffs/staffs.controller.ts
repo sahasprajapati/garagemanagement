@@ -141,7 +141,20 @@ export class StaffsController {
       await this.staffsService.removeDesgination(+id),
     );
   }
-
+  @Put('designation/delete')
+  @ApiCustomResponse(StaffFindAllDto, true)
+  @CheckPolicies(
+    new CustomPolicyHandler(PermissionAction.Delete, PermissionSubject.StaffDesignation),
+  )
+  async removeMultiDesignation(@Body('ids') ids: number[]) {
+    return new ResponseDto(
+      generateRepsonseMessage({
+        model: 'Staff',
+        message: ResponseMessage.Delete,
+      }),
+      await this.staffsService.removeMultiDesignation(ids),
+    );
+  }
   // ---------LEAVE--------
   @Post("/leave")
   @ApiCustomResponse(Leave)
@@ -161,7 +174,7 @@ export class StaffsController {
   @Patch('leave/:id')
   @ApiCustomResponse(StaffFindAllDto, true)
   @CheckPolicies(
-    new CustomPolicyHandler(PermissionAction.Update, PermissionSubject.User),
+    new CustomPolicyHandler(PermissionAction.Update, PermissionSubject.Leave),
   )
   async updateLeave(@Param('id') id: string, @Body() updateStaffLeaveDto: UpdateLeaveDto) {
     return new ResponseDto(
