@@ -9,6 +9,8 @@ import { Prisma } from '@prisma/client';
 import { paginate } from '@src/common/utils/paginate';
 import { FindAllOwnedVehicleWithSelect } from './dto/owned-vehicle.dto';
 import { verifyEntity } from './../common/utils/verifyEntity';
+import { FilterOwnedVehicleDto } from './dto/filterOwnedVehicle.dto';
+import { paginateFilter } from './../common/utils/paginate';
 
 @Injectable()
 export class OwnedVehicleService {
@@ -73,6 +75,30 @@ export class OwnedVehicleService {
       },
     });
   }
+
+  async findByFilter(filterOptions:FilterOwnedVehicleDto) {
+    // await verifyEntity({
+    //   model: this.prisma.ownedVehicle,
+    //   name: 'Owned Vehicle',
+    //   id,
+    // });
+    console.log('Sdfd', { ...filterOptions });
+    console.log({...paginateFilter(filterOptions.customerId)})
+
+    const orOperator: any[] = [];
+    if (filterOptions.customerId) {
+      orOperator.push({ customerId: parseInt(filterOptions.customerId) });
+    }
+    console.log(orOperator);
+    const whereOperator={};
+    whereOperator['OR'] =orOperator
+    console.log(whereOperator)
+
+    return this.prisma.ownedVehicle.findMany({
+      where: whereOperator,
+    });
+  }
+
 
   async update(id: number, updateOwnedVehicleDto: UpdateOwnedVehicleDto) {
     await verifyEntity({
