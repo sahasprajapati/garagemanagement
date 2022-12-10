@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from './../prisma/prisma.service';
 import { verifyEntity } from './../common/utils/verifyEntity';
 import { PageOptionsDto } from './../common/dtos/pagination/page-options.dto';
@@ -43,6 +43,9 @@ export class VehicleBrandService {
       select: {
         id: true,
         name: true,
+        vehicleWheelerType: {
+          select: { name: true },
+        },
       },
     };
     const vehicleBrands = await paginate<

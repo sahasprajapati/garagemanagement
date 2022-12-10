@@ -43,6 +43,15 @@ export class VehicleService {
       select: {
         id: true,
         name: true,
+        wheelerType: {
+          select: { name: true },
+        },
+        brand: {
+          select: { name: true },
+        },
+        type: {
+          select: { name: true },
+        },
       },
     };
     const vehicles = await paginate<
@@ -61,6 +70,18 @@ export class VehicleService {
     return this.prisma.vehicle.findFirst({
       where: {
         id: id,
+      },
+      select: {
+        name: true,
+        id: true,
+        fuel: true,
+        engine: true,
+        mileage: true,
+        transmission: true,
+        features: true,
+        brand: { select: { name: true } },
+        type: { select: { name: true } },
+        wheelerType: { select: { name: true } },
       },
     });
   }

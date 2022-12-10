@@ -9,6 +9,7 @@ import {
   Delete,
   Query,
   Put,
+  BadRequestException,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CheckPolicies } from '@src/auth/decorator/policy.decorator';
@@ -28,15 +29,12 @@ import { CreateVehicleDto } from './dto/create-vehicle.dto';
 @ApiBearerAuth()
 @ApiTags('vehicles')
 export class VehicleController {
-  constructor(private readonly customerService: VehicleService) {}
+  constructor(private readonly vehicleService: VehicleService) {}
 
   @Post()
   @ApiCustomResponse(Vehicle)
   @CheckPolicies(
-    new CustomPolicyHandler(
-      PermissionAction.Create,
-      PermissionSubject.Vehicle,
-    ),
+    new CustomPolicyHandler(PermissionAction.Create, PermissionSubject.Vehicle),
   )
   async create(@Body() createVehicleDto: CreateVehicleDto) {
     return new ResponseDto(
@@ -44,33 +42,41 @@ export class VehicleController {
         model: 'Vehicle',
         message: ResponseMessage.Create,
       }),
-      await this.customerService.create(createVehicleDto),
+      await this.vehicleService.create(createVehicleDto),
     );
   }
 
   @Get()
   async findAll(@Query() pageOptionsDto: PageOptionsDto) {
-    return await this.customerService.findAll(pageOptionsDto);
+    return await this.vehicleService.findAll(pageOptionsDto);
   }
 
   @Get(':id')
-  async indOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return new ResponseDto(
       generateRepsonseMessage({
         model: 'Vehicle',
         message: ResponseMessage.Read,
       }),
-      await this.customerService.findOne(+id),
+      await this.vehicleService.findOne(+id),
+    );
+  }
+
+  @Get()
+  async findOneByName(@Query() query: { name: string }) {
+    return new ResponseDto(
+      generateRepsonseMessage({
+        model: 'Vehicle',
+        message: ResponseMessage.Read,
+      }),
+      await this.vehicleService.findOneByName(query.name),
     );
   }
 
   @Patch(':id')
   @ApiCustomResponse(Vehicle, true)
   @CheckPolicies(
-    new CustomPolicyHandler(
-      PermissionAction.Update,
-      PermissionSubject.Vehicle,
-    ),
+    new CustomPolicyHandler(PermissionAction.Update, PermissionSubject.Vehicle),
   )
   async update(
     @Param('id') id: string,
@@ -81,17 +87,14 @@ export class VehicleController {
         model: 'Vehicle',
         message: ResponseMessage.Update,
       }),
-      await this.customerService.update(+id, updateVehicleDto),
+      await this.vehicleService.update(+id, updateVehicleDto),
     );
   }
 
   @Delete(':id')
   @ApiCustomResponse(Vehicle, true)
   @CheckPolicies(
-    new CustomPolicyHandler(
-      PermissionAction.Delete,
-      PermissionSubject.Vehicle,
-    ),
+    new CustomPolicyHandler(PermissionAction.Delete, PermissionSubject.Vehicle),
   )
   async remove(@Param('id') id: string) {
     return new ResponseDto(
@@ -99,25 +102,30 @@ export class VehicleController {
         model: 'Vehicle',
         message: ResponseMessage.Delete,
       }),
-      await this.customerService.remove(+id),
+      await this.vehicleService.remove(+id),
     );
   }
 
   @Put('/delete')
   @ApiCustomResponse(Vehicle, true)
   @CheckPolicies(
-    new CustomPolicyHandler(
-      PermissionAction.Delete,
-      PermissionSubject.Vehicle,
-    ),
+    new CustomPolicyHandler(PermissionAction.Delete, PermissionSubject.Vehicle),
   )
   async removeMulti(@Body('ids') ids: number[]) {
+    if (ids == undefined || ids.length <= 0) {
+      throw new BadRequestException(
+        generateRepsonseMessage({
+          model: 'Vehicle',
+          message: ' Cannot perform this action',
+        }),
+      );
+    }
     return new ResponseDto(
       generateRepsonseMessage({
         model: 'Vehicle',
         message: ResponseMessage.Delete,
       }),
-      await this.customerService.removeMulti(ids),
+      await this.vehicleService.removeMulti(ids),
     );
   }
 }

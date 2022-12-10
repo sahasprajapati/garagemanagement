@@ -43,6 +43,9 @@ export class VehicleTypeService {
       select: {
         id: true,
         name: true,
+        vehicleWheelerType: {
+          select: { name: true },
+        },
       },
     };
     const vehicleTypes = await paginate<

@@ -14,6 +14,7 @@ import { ServiceModule } from './service/service.module';
 import { VehicleModule } from './vehicle/vehicle.module';
 import { VehicleBrandModule } from './vehicle-brand/vehicle-brand.module';
 import { VehicleTypeModule } from './vehicle-type/vehicle-type.module';
+import { VehicleWheelerTypeModule } from './vehicle-wheeler-type/vehicle-wheeler-type.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { VehicleTypeModule } from './vehicle-type/vehicle-type.module';
     VehicleBrandModule,
     VehicleTypeModule,
     ServiceModule,
+    VehicleWheelerTypeModule,
   ],
   controllers: [AppController],
   providers: [

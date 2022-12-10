@@ -9,6 +9,7 @@ import {
   Delete,
   Query,
   Put,
+  BadRequestException,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CheckPolicies } from '@src/auth/decorator/policy.decorator';
@@ -28,7 +29,7 @@ import { UpdateVehicleBrandDto } from './dto/update-vehicle-brand.dto';
 @ApiBearerAuth()
 @ApiTags('vehicle-brands')
 export class VehicleBrandController {
-  constructor(private readonly customerService: VehicleBrandService) {}
+  constructor(private readonly vehicleBrandService: VehicleBrandService) {}
 
   @Post()
   @ApiCustomResponse(VehicleBrand)
@@ -44,23 +45,34 @@ export class VehicleBrandController {
         model: 'VehicleBrand',
         message: ResponseMessage.Create,
       }),
-      await this.customerService.create(createVehicleBrandDto),
+      await this.vehicleBrandService.create(createVehicleBrandDto),
     );
   }
 
   @Get()
   async findAll(@Query() pageOptionsDto: PageOptionsDto) {
-    return await this.customerService.findAll(pageOptionsDto);
+    return await this.vehicleBrandService.findAll(pageOptionsDto);
   }
 
   @Get(':id')
-  async indOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return new ResponseDto(
       generateRepsonseMessage({
         model: 'VehicleBrand',
         message: ResponseMessage.Read,
       }),
-      await this.customerService.findOne(+id),
+      await this.vehicleBrandService.findOne(+id),
+    );
+  }
+
+  @Get()
+  async findOneByName(@Query() query: { name: string }) {
+    return new ResponseDto(
+      generateRepsonseMessage({
+        model: 'VehicleBrand',
+        message: ResponseMessage.Read,
+      }),
+      await this.vehicleBrandService.findOneByName(query.name),
     );
   }
 
@@ -81,7 +93,7 @@ export class VehicleBrandController {
         model: 'VehicleBrand',
         message: ResponseMessage.Update,
       }),
-      await this.customerService.update(+id, updateVehicleBrandDto),
+      await this.vehicleBrandService.update(+id, updateVehicleBrandDto),
     );
   }
 
@@ -99,7 +111,7 @@ export class VehicleBrandController {
         model: 'VehicleBrand',
         message: ResponseMessage.Delete,
       }),
-      await this.customerService.remove(+id),
+      await this.vehicleBrandService.remove(+id),
     );
   }
 
@@ -112,12 +124,20 @@ export class VehicleBrandController {
     ),
   )
   async removeMulti(@Body('ids') ids: number[]) {
+    if (ids == undefined || ids.length <= 0) {
+      throw new BadRequestException(
+        generateRepsonseMessage({
+          model: 'VehicleBrand',
+          message: ' Cannot perform this action',
+        }),
+      );
+    }
     return new ResponseDto(
       generateRepsonseMessage({
         model: 'VehicleBrand',
         message: ResponseMessage.Delete,
       }),
-      await this.customerService.removeMulti(ids),
+      await this.vehicleBrandService.removeMulti(ids),
     );
   }
 }

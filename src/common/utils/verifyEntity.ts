@@ -1,5 +1,5 @@
 import { ResponseMessage } from '@common/enums/response.enum';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { generateRepsonseMessage } from '@src/roles/response';
 
 export const verifyEntity = async <T>({
@@ -28,7 +28,7 @@ export const verifyEntity = async <T>({
     },
   });
   if (!user && !throwExistError)
-    throw new BadRequestException(
+    throw new NotFoundException(
       generateRepsonseMessage({
         model: name,
         message: ResponseMessage.NotFound,
@@ -39,7 +39,7 @@ export const verifyEntity = async <T>({
     throw new BadRequestException(
       generateRepsonseMessage({
         model: name,
-        message:  ResponseMessage.NotUnique,
+        message: ResponseMessage.NotUnique,
       }),
     );
 };

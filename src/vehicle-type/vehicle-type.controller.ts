@@ -9,6 +9,7 @@ import {
   Delete,
   Query,
   Put,
+  BadRequestException,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CheckPolicies } from '@src/auth/decorator/policy.decorator';
@@ -28,7 +29,7 @@ import { UpdateVehicleTypeDto } from './dto/update-vehicle-type.dto';
 @ApiBearerAuth()
 @ApiTags('vehicle-types')
 export class VehicleTypeController {
-  constructor(private readonly customerService: VehicleTypeService) {}
+  constructor(private readonly vehicleTypeService: VehicleTypeService) {}
 
   @Post()
   @ApiCustomResponse(VehicleType)
@@ -44,23 +45,34 @@ export class VehicleTypeController {
         model: 'VehicleType',
         message: ResponseMessage.Create,
       }),
-      await this.customerService.create(createVehicleTypeDto),
+      await this.vehicleTypeService.create(createVehicleTypeDto),
     );
   }
 
   @Get()
   async findAll(@Query() pageOptionsDto: PageOptionsDto) {
-    return await this.customerService.findAll(pageOptionsDto);
+    return await this.vehicleTypeService.findAll(pageOptionsDto);
   }
 
   @Get(':id')
-  async indOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return new ResponseDto(
       generateRepsonseMessage({
         model: 'VehicleType',
         message: ResponseMessage.Read,
       }),
-      await this.customerService.findOne(+id),
+      await this.vehicleTypeService.findOne(+id),
+    );
+  }
+
+  @Get()
+  async findOneByName(@Query() query: { name: string }) {
+    return new ResponseDto(
+      generateRepsonseMessage({
+        model: 'VehicleType',
+        message: ResponseMessage.Read,
+      }),
+      await this.vehicleTypeService.findOneByName(query.name),
     );
   }
 
@@ -81,7 +93,7 @@ export class VehicleTypeController {
         model: 'VehicleType',
         message: ResponseMessage.Update,
       }),
-      await this.customerService.update(+id, updateVehicleTypeDto),
+      await this.vehicleTypeService.update(+id, updateVehicleTypeDto),
     );
   }
 
@@ -99,7 +111,7 @@ export class VehicleTypeController {
         model: 'VehicleType',
         message: ResponseMessage.Delete,
       }),
-      await this.customerService.remove(+id),
+      await this.vehicleTypeService.remove(+id),
     );
   }
 
@@ -112,12 +124,20 @@ export class VehicleTypeController {
     ),
   )
   async removeMulti(@Body('ids') ids: number[]) {
+    if (ids == undefined || ids.length <= 0) {
+      throw new BadRequestException(
+        generateRepsonseMessage({
+          model: 'VehicleType',
+          message: ' Cannot perform this action',
+        }),
+      );
+    }
     return new ResponseDto(
       generateRepsonseMessage({
         model: 'VehicleType',
         message: ResponseMessage.Delete,
       }),
-      await this.customerService.removeMulti(ids),
+      await this.vehicleTypeService.removeMulti(ids),
     );
   }
 }

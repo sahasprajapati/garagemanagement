@@ -4,6 +4,15 @@ import { Prisma } from '@prisma/client';
 const VehicleSelect = Prisma.validator<Prisma.VehicleSelect>()({
   id: true,
   name: true,
+  wheelerType: {
+    select: { name: true },
+  },
+  brand: {
+    select: { name: true },
+  },
+  type: {
+    select: { name: true },
+  },
 });
 
 export type FindAllVehicleWithSelect = Prisma.CustomerGetPayload<{
