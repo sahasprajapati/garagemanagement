@@ -1,16 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@src/prisma/prisma.service';
-import { CreateOwnedVehicleDto } from './dto/create-owned-vehicle.dto';
-import { UpdateOwnedVehicleDto } from './dto/update-owned-vehicle.dto';
-import { PageOptionsDto } from './../common/dtos/pagination/page-options.dto';
-import { PageDto } from './../common/dtos/pagination/page.dto';
 import { OwnedVehicle } from '@gen/prisma-class/owned_vehicle';
+import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { paginate } from '@src/common/utils/paginate';
-import { FindAllOwnedVehicleWithSelect } from './dto/owned-vehicle.dto';
+import { PrismaService } from '@src/prisma/prisma.service';
+import { PageOptionsDto } from './../common/dtos/pagination/page-options.dto';
+import { PageDto } from './../common/dtos/pagination/page.dto';
 import { verifyEntity } from './../common/utils/verifyEntity';
+import { CreateOwnedVehicleDto } from './dto/create-owned-vehicle.dto';
 import { FilterOwnedVehicleDto } from './dto/filterOwnedVehicle.dto';
-import { paginateFilter } from './../common/utils/paginate';
+import { FindAllOwnedVehicleWithSelect } from './dto/owned-vehicle.dto';
+import { UpdateOwnedVehicleDto } from './dto/update-owned-vehicle.dto';
 
 @Injectable()
 export class OwnedVehicleService {
@@ -76,29 +75,53 @@ export class OwnedVehicleService {
     });
   }
 
-  async findByFilter(filterOptions:FilterOwnedVehicleDto) {
-    // await verifyEntity({
-    //   model: this.prisma.ownedVehicle,
-    //   name: 'Owned Vehicle',
-    //   id,
-    // });
-    console.log('Sdfd', { ...filterOptions });
-    console.log({...paginateFilter(filterOptions.customerId)})
-
-    const orOperator: any[] = [];
+  async findByFilter(
+    filterOptions: FilterOwnedVehicleDto,
+  ): Promise<PageDto<OwnedVehicle>> {
+    const andOperator: any[] = [];
     if (filterOptions.customerId) {
-      orOperator.push({ customerId: parseInt(filterOptions.customerId) });
+      andOperator.push({ customerId: parseInt(filterOptions.customerId) });
     }
-    console.log(orOperator);
-    const whereOperator={};
-    whereOperator['OR'] =orOperator
-    console.log(whereOperator)
+    if (filterOptions.vehicleId) {
+      andOperator.push({ vehicleId: parseInt(filterOptions.vehicleId) });
+    }
 
-    return this.prisma.ownedVehicle.findMany({
+    if (filterOptions.makeYear) {
+      andOperator.push({ makeYear: filterOptions.makeYear });
+    }
+
+    if (filterOptions.color) {
+      andOperator.push({ color: filterOptions.color });
+    }
+    if (filterOptions.priceRangeStart && filterOptions.priceRangeEnd) {
+      andOperator.push({
+        price: {
+          gte: filterOptions.priceRangeStart,
+          lte: filterOptions.priceRangeEnd,
+        },
+      });
+    }
+
+    const whereOperator = {};
+    if (andOperator.length) {
+      whereOperator['AND'] = andOperator;
+    }
+
+    const criteria: Prisma.OwnedVehicleFindManyArgs = {
+      skip: filterOptions.skip,
+      take: filterOptions.take,
+      orderBy: {
+        createdAt: filterOptions.order,
+      },
       where: whereOperator,
-    });
-  }
+    };
 
+    const ownedVehicles = await paginate<
+      FindAllOwnedVehicleWithSelect,
+      Prisma.OwnedVehicleFindManyArgs
+    >(this.prisma.ownedVehicle, criteria, filterOptions);
+    return ownedVehicles;
+  }
 
   async update(id: number, updateOwnedVehicleDto: UpdateOwnedVehicleDto) {
     await verifyEntity({

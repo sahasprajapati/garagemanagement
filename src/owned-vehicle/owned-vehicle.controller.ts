@@ -61,7 +61,7 @@ export class OwnedVehicleController {
         model: 'Owned Vehicle',
         message: ResponseMessage.Read,
       }),
-      await this.ownedVehicleService.findByFilter(filterOptions)
+      await this.ownedVehicleService.findByFilter(filterOptions),
     );
   }
 
