@@ -65,6 +65,13 @@ export class VehicleTypeService {
       where: {
         id: id,
       },
+      select: {
+        id: true,
+        name: true,
+        vehicleWheelerType: {
+          select: { name: true },
+        },
+      },
     });
   }
 
