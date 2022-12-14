@@ -22,10 +22,11 @@ import { ResponseDto } from '@common/dtos/response.dto';
 import { generateRepsonseMessage } from '@src/roles/response';
 import { ResponseMessage } from '@common/enums/response.enum';
 import { PageOptionsDto } from './../common/dtos/pagination/page-options.dto';
+import { FilterOwnedVehicleDto } from './dto/filterOwnedVehicle.dto';
 
 @Controller('owned-vehicle')
 @ApiBearerAuth()
-@ApiTags('staffs')
+@ApiTags('OwnedVehicle')
 export class OwnedVehicleController {
   constructor(private readonly ownedVehicleService: OwnedVehicleService) {}
 
@@ -49,7 +50,19 @@ export class OwnedVehicleController {
 
   @Get()
   async findAll(@Query() pageOptionsDto: PageOptionsDto) {
+    console.log(pageOptionsDto);
     return this.ownedVehicleService.findAll(pageOptionsDto);
+  }
+
+  @Get('filter')
+  async findByFilter(@Query() filterOptions: FilterOwnedVehicleDto) {
+    return new ResponseDto(
+      generateRepsonseMessage({
+        model: 'Owned Vehicle',
+        message: ResponseMessage.Read,
+      }),
+      await this.ownedVehicleService.findByFilter(filterOptions),
+    );
   }
 
   @Get(':id')
