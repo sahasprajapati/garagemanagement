@@ -15,6 +15,7 @@ import { VehicleModule } from './vehicle/vehicle.module';
 import { VehicleBrandModule } from './vehicle-brand/vehicle-brand.module';
 import { VehicleTypeModule } from './vehicle-type/vehicle-type.module';
 import { VehicleWheelerTypeModule } from './vehicle-wheeler-type/vehicle-wheeler-type.module';
+import { TransactionModule } from './transaction/transaction.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { VehicleWheelerTypeModule } from './vehicle-wheeler-type/vehicle-wheeler
     VehicleTypeModule,
     ServiceModule,
     VehicleWheelerTypeModule,
+    TransactionModule,
   ],
   controllers: [AppController],
   providers: [
