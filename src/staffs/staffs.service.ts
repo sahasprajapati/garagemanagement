@@ -15,6 +15,7 @@ import { FindAllStaffWithSelect } from './dto/staff.dto';
 import { UpdateLeaveDto } from './dto/update-leave.dto';
 import { UpdateStaffDesignationDto } from './dto/update-staff-designation.dto';
 import { UpdateAttendanceDto, UpdateStaffDto } from './dto/update-staff.dto';
+import { AttendanceFilterDto } from './dto/attendanceFilter.dto';
 
 enum AttendaceStatus {
   PRESENT = 'PRESENT',
@@ -319,7 +320,7 @@ export class StaffsService {
   }
 
   async findAllStaffsAttendance(
-    pageOptionsDto: PageOptionsDto,
+    pageOptionsDto: AttendanceFilterDto,
   ): Promise<PageDto<FindAllStaffWithSelect>> {
     // Get proper criteria using prisma findMany types
     // this.prisma.user.findMany();
@@ -367,12 +368,23 @@ export class StaffsService {
       });
     });
     Promise.all(staffAttendances);
-    const criteria: Prisma.StaffFindManyArgs = {
-      where: {
+
+    const whereOperator = {};
+
+    whereOperator['AND'] = [
+      {
         name: {
           ...(pageOptionsDto.filter ? { search: pageOptionsDto.filter } : {}),
         },
       },
+    ];
+
+    if (pageOptionsDto.date) {
+      whereOperator['AND'].push({ date: pageOptionsDto.date });
+    }
+
+    const criteria: Prisma.StaffFindManyArgs = {
+      where: whereOperator,
       skip: pageOptionsDto.skip,
       take: pageOptionsDto.take,
       orderBy: {

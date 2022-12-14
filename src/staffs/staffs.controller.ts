@@ -37,6 +37,7 @@ import { Leave } from '@gen/prisma-class/leave';
 import { UpdateLeaveDto } from './dto/update-leave.dto';
 // import { Product } from './product'
 // import { ProductRelations } from './product_relations'
+import { AttendanceFilterDto } from './dto/attendanceFilter.dto';
 
 export class StaffDto extends IntersectionType(
   Staff,
@@ -250,7 +251,7 @@ export class StaffsController {
   @CheckPolicies(
     new CustomPolicyHandler(PermissionAction.Read, PermissionSubject.User),
   )
-  async findAllStaffAttendance(@Query() pageOptionsDto: PageOptionsDto) {
+  async findAllStaffAttendance(@Query() pageOptionsDto: AttendanceFilterDto) {
     // const ability = await this.abilityFactory.createForUser(req.user)
     // ability.can()
     // if (ability.can(PermissionAction.READ, condition)) {
